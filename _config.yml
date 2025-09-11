@@ -26,7 +26,7 @@ author:
   avatar           : "photo.jpg"
   name             : "ZhaoXiangLan"
   pronouns         : "He/His" 
-  bio              : "Zhao's personal info"
+  bio              : "Electrical Engineering Student in Temple University"
   location         : "Philadelphia"
   employer         : "Temple University"
   uri              : # URL
@@ -38,9 +38,9 @@ author:
   googlescholar    : "https://scholar.google.com/citations?user=PS_CX0AAAAAJ"
   inspire-hep      : # URL
   impactstory      : # URL
-  orcid            : "http://orcid.org/yourorcidurl"
+  orcid            : 
   semantic         : # URL
-  pubmed           : "https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
+  pubmed           : 
   researchgate     : # URL
   scopus           : # URL
 
