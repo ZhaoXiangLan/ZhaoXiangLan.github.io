@@ -11,54 +11,49 @@ redirect_from:
 
 Education
 ======
-* Ph.D in Version Control Theory, GitHub University, 2018 (expected)
-* M.S. in Jekyll, GitHub University, 2014
-* B.S. in GitHub, GitHub University, 2012
+Temple University College of Engineering                           Philadelphia, Pennsylvania 
+Bachelor of Science in Electrical Engineering                      Grad Expected Date: Aug 2027 
+Selected Courses: ECE 1111, ECE 3822, Robot control
+
+Community College of Philadelphia	                                 Philadelphia，Pennsylvania 
+Associate of Science in Engineering, GPA:3.86                      Grad Date: Aug 2025 
 
 Work experience
 ======
-* Spring 2024: Academic Pages Collaborator
-  * GitHub University
-  * Duties includes: Updates and improvements to template
-  * Supervisor: The Users
+INSTACART                                                          Philadelphia, Pennsylvania
+SHOPPER                                                            July 2025 – Aug 2025
+-	Shopped for and delivered groceries and household items accurately and on time.
+-	Communicated with customers to confirm orders, substitutions, and delivery details.
+-	Managed multiple orders and routes efficiently to meet deadlines.
 
-* Fall 2015: Research Assistant
-  * GitHub University
-  * Duties included: Merging pull requests
-  * Supervisor: Professor Hub
+Yantze Gourmet                                                     Lansdale, Pennsylvania                                   
+Server                                                             June 2023 – Sep 2023                           
+-	Greeted and served customers in a fast-paced dining environment.
+-	Collaborated with team members to provide efficient and friendly service.
 
-* Summer 2015: Research Assistant
-  * GitHub University
-  * Duties included: Tagging issues
-  * Supervisor: Professor Git
+PROJECTS
+======
+Train Modeling and Assembly                                        Octobor,2021
+Clarke County High School
+-	Designed and modeled individual parts of a small train using Autodesk Inventor
+-	Assembled components within the software and simulated train motion on virtual tracks.
   
+Bridge Building                                                    Octobor,2024
+Community College of Philadelphia
+-	Design and construct a model bridge capable of sustaining maximum load before failure.
+-	Apply principles of structural engineering, materials science, and load distribution.
+
+Game design                                                        September,2025
+Temple University
+-	This project applies C++ knowledge such as object-oriented programming, STL containers, and basic design patterns to create a mini game where players earn scores, form teams, and compete.
+  
+Robot Dance Routine                                                September,2025
+Temple University
+-	This project programs the Mini Pupper robot dog with ROS2 and Python to perform dance movements, supported by AWS IoT, Docker, and AI tools.
+
 Skills
 ======
-* Skill 1
-* Skill 2
-  * Sub-skill 2.1
-  * Sub-skill 2.2
-  * Sub-skill 2.3
-* Skill 3
-
-Publications
-======
-  <ul>{% for post in site.publications reversed %}
-    {% include archive-single-cv.html %}
-  {% endfor %}</ul>
-  
-Talks
-======
-  <ul>{% for post in site.talks reversed %}
-    {% include archive-single-talk-cv.html  %}
-  {% endfor %}</ul>
-  
-Teaching
-======
-  <ul>{% for post in site.teaching reversed %}
-    {% include archive-single-cv.html %}
-  {% endfor %}</ul>
-  
-Service and leadership
-======
-* Currently signed in to 43 different slack teams
+-Autodesk Inventor
+-AutoCAD
+-Microsoft Office (Excel, Powerpoint, and Word)
+-Fluency Chinese (Verbal and Written Proficiency)
