@@ -13,6 +13,10 @@ Python · Hash Tables · Heaps · CSV/Pickle Pipeline
 
 Engineered a custom movie database system from raw CSV datasets, supporting scalable search and analytics.
 
+## GitHub Repository
+
+[View Repository](https://github.com/tylerbandura/ECE-3822-Final-Project)
+
 ## Key Contributions
 
 - Implemented core data structures from scratch, including hash tables with chaining, dynamic arrays, and heaps.
