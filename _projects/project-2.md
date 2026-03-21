@@ -1,13 +1,13 @@
 ---
-title: "IMDB-Style Movie Database Engine | Python"
-excerpt: "Custom movie database engine with scalable search, indexing, and top-K analytics"
+title: "IMDB-Style Movie Database Engine"
+excerpt: "Python · Data Structures · Indexing · Top-K Analytics"
 collection: projects
 date: 2025-12-11
 ---
 
 ## Tech Stack
 
-Python
+Python · Hash Tables · Heaps · CSV/Pickle Pipeline
 
 ## Overview
 
