@@ -1,17 +1,17 @@
 ---
-title: "Mini Pupper Autonomous Robot System"
-excerpt: "ROS2 | Python | Computer Vision | Embedded Systems"
+title: "Mini Pupper Autonomous Line Following, Color Recognition, and Location-Based Dance System"
+excerpt: "ROS2 | Python | Computer Vision | Robot"
 collection: projects
 date: 2026-03-20
 ---
 
 ## Tech Stack
 
-ROS2 | Python | Computer Vision | Embedded Systems
+ROS2 | Python | Computer Vision | Robot
 
 ## Overview
 
-Developed an autonomous quadruped robot on Mini Pupper using ROS2 with a modular architecture spanning navigation, perception, and behavior control.
+This project implements an autonomous robotic system using the Mini Pupper platform, combining line following, real-time color recognition, and location-triggered behaviors.
 
 ## Key Contributions
 
