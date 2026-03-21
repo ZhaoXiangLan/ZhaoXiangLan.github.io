@@ -1,13 +1,13 @@
 ---
 title: "Mini Pupper Autonomous Line Following, Color Recognition, and Location-Based Dance System"
-excerpt: "ROS2 | Python | Computer Vision | Robot"
+excerpt: "ROS2 · Python · Computer Vision · Robotics"
 collection: projects
 date: 2025-12-11
 ---
 
 ## Tech Stack
 
-ROS2 | Python | Computer Vision | Robot
+ROS2 · Python · Computer Vision · Robotics
 
 ## Overview
 
