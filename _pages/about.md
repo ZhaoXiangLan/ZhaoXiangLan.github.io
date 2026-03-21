@@ -7,8 +7,6 @@ redirect_from:
   - /about.html
 ---
 
-## About Me
-
 Hello, I am ZhaoXiang Lan, an Electrical Engineering student at Temple University.
 
 My interests include microcontrollers, robotic arms, robotics, and IoT (Internet of Things). I enjoy designing and implementing systems that interact with the physical world and transform data into meaningful insights.
