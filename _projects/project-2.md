@@ -1,6 +1,6 @@
 ---
 title: "IMDB-Style Movie Database Engine"
-excerpt: "Python · Data Structures · Indexing · Top-K Analytics"
+excerpt: "Python · Data Structures · Top-K Analytics"
 collection: projects
 date: 2025-12-11
 ---
