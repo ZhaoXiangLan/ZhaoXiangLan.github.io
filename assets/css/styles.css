@@ -66,15 +66,26 @@ button, input { font: inherit; }
   transform: rotate(-3deg);
   transition: transform .3s cubic-bezier(.2,.8,.2,1);
 }
-.header-identity span {
-  color: rgb(247 244 236 / 72%);
-  font-family: var(--mono);
-  font-size: .67rem;
-  font-weight: 700;
-  letter-spacing: .05em;
-  text-transform: uppercase;
+.header-mini-wordmark {
+  display: flex;
+  align-items: center;
+  gap: .08em;
   white-space: nowrap;
 }
+.header-mini-wordmark > span {
+  display: block;
+  color: transparent;
+  font-family: "Instrument Serif", var(--serif);
+  font-size: 1.575rem;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: -.04em;
+  text-transform: uppercase;
+  -webkit-text-stroke: .65px rgb(247 244 236 / 78%);
+  text-shadow: .045em .045em 0 var(--red), .09em .09em 0 var(--lime);
+}
+.header-mini-wordmark > span:first-child { transform: rotate(-5deg) skewX(-12deg) scaleX(.9); }
+.header-mini-wordmark > span:last-child { transform: rotate(5deg) skewX(-12deg) scaleX(.86) translateY(.06em); }
 .header-identity:hover img { transform: rotate(2deg) scale(1.06); }
 .js .header-identity, .js .header-links { visibility: hidden; opacity: 0; }
 .js .site-header.is-project .header-identity,
@@ -150,43 +161,6 @@ button, input { font: inherit; }
   text-align: center;
   will-change: transform, opacity;
 }
-.wordmark-picker {
-  position: absolute;
-  z-index: 4;
-  top: clamp(5.4rem, 13vh, 8rem);
-  right: clamp(1rem, 4vw, 4rem);
-  display: grid;
-  gap: .45rem;
-  justify-items: end;
-  color: rgb(247 244 236 / 68%);
-  font-family: var(--mono);
-  font-size: .58rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
-.wordmark-options {
-  display: flex;
-  gap: .25rem;
-  padding: .25rem;
-  border: 1px solid rgb(247 244 236 / 24%);
-  background: rgb(5 7 11 / 22%);
-  backdrop-filter: blur(12px);
-}
-.wordmark-options button {
-  min-width: 2.1rem;
-  padding: .45rem .5rem;
-  border: 0;
-  color: rgb(247 244 236 / 62%);
-  background: transparent;
-  cursor: pointer;
-  font-family: var(--mono);
-  font-size: .62rem;
-  font-weight: 700;
-  letter-spacing: .04em;
-  transition: color .2s ease, background .2s ease, transform .2s ease;
-}
-.wordmark-options button:hover { color: var(--cream); transform: translateY(-1px); }
-.wordmark-options button.is-selected { color: var(--black); background: var(--lime); }
 .hero-wordmark {
   display: flex;
   align-items: center;
@@ -676,7 +650,7 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   .site-header { inset: .8rem 0 auto; display: flex; justify-content: center; padding: 0 .8rem; }
   .header-identity { position: absolute; top: 0; left: .8rem; gap: .42rem; }
   .header-identity img { width: 1.9rem; height: 1.9rem; border-radius: .55rem; }
-  .header-identity span { font-size: .5rem; letter-spacing: .015em; }
+  .header-mini-wordmark > span { font-size: 1.2rem; }
   .header-links { position: absolute; top: .72rem; right: .8rem; gap: .62rem; font-size: .48rem; }
   .site-header.is-project .site-nav { visibility: hidden !important; opacity: 0 !important; pointer-events: none; }
   .page-work .header-identity, .page-work .header-links,
@@ -686,7 +660,6 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   .site-nav a { padding: .58rem .8rem; font-size: .64rem; }
   .hero { min-height: max(620px, 100svh); }
   .hero-stage { padding-right: .7rem; padding-left: .7rem; }
-  .wordmark-picker { top: 4.8rem; right: .8rem; }
   .hero-wordmark { font-size: 14.2vw; }
   .hero-tagline { flex-direction: column; font-size: .75rem; }
   .hero-tagline em { margin-top: -1px; }
