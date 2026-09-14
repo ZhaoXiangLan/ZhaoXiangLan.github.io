@@ -65,7 +65,7 @@ const initMotion = () => {
         const target = link.getAttribute('href');
         if (!target || target === '#') return;
         event.preventDefault();
-        smoother.scrollTo(target, true, 'top top');
+        smoother.scrollTo(target === '#top' ? 0 : target, true, 'top top');
       });
     });
   }
