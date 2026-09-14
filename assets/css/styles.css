@@ -166,14 +166,18 @@ button, input { font: inherit; }
 .word-mask { display: block; overflow: hidden; padding: .13em .06em .18em; }
 .word-mask > span {
   display: block;
+  font-family: "Instrument Serif", var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -.02em;
   color: transparent;
-  -webkit-text-stroke: clamp(1.5px, .16vw, 2.6px) var(--cream);
+  -webkit-text-stroke: clamp(1px, .12vw, 2px) var(--cream);
   paint-order: stroke fill;
   transform-origin: 50% 60%;
   will-change: transform, opacity;
 }
-.word-mask:first-child > span { transform: rotate(-.8deg); }
-.word-mask:last-child > span { transform: rotate(1deg) translateY(.035em); }
+.word-mask:first-child > span { transform: rotate(-1.4deg) skewX(-5deg) scaleX(.94); }
+.word-mask:last-child > span { transform: rotate(2.5deg) skewX(-9deg) scaleX(.88) translateY(.035em); }
 
 .hero-tagline {
   display: flex;
@@ -220,6 +224,8 @@ button, input { font: inherit; }
 @keyframes ticker { to { transform: translateX(-100%); } }
 
 .work { position: relative; z-index: 3; background: #151a1d; }
+.blank-page { min-height: 100svh; background: var(--black); }
+.blank-page-content { min-height: 100svh; }
 .project-rail {
   position: fixed;
   z-index: 40;
@@ -263,18 +269,18 @@ button, input { font: inherit; }
 .scene-one .project-viewport {
   --title-stroke: var(--cream);
   color: var(--cream);
-  background: linear-gradient(180deg, #171c20, #6e7980);
+  background: linear-gradient(180deg, #101827 0%, #3f4e70 100%);
   box-shadow: 0 -28px 75px rgb(5 7 11 / 28%);
 }
 .scene-two .project-viewport {
   --title-stroke: var(--cream);
   color: var(--cream);
-  background: linear-gradient(180deg, #091021, #263d98 48%, #6b78c8);
+  background: linear-gradient(180deg, #1a2b5e 0%, #4f69bb 48%, #9aa8e0 100%);
 }
 .scene-three .project-viewport {
   --title-stroke: var(--black);
   color: var(--black);
-  background: linear-gradient(180deg, #c2df4e, #d9ef82 55%, #f0f5d6);
+  background: linear-gradient(180deg, #cdeb55 0%, #e2ef94 55%, #f7f4ec 100%);
 }
 .project-label {
   position: absolute;
@@ -577,11 +583,8 @@ button, input { font: inherit; }
 }
 .contact-footer a:last-child { justify-self: end; }
 .contact-footer a:hover { color: var(--black); }
-.page-contact .header-identity span,
-.page-contact .header-links,
 body.contact-in-view .header-identity span,
 body.contact-in-view .header-links { color: rgb(5 7 11 / 62%); }
-.page-contact .header-links a:hover,
 body.contact-in-view .header-links a:hover { color: var(--black); }
 
 @media (max-width: 900px) {
