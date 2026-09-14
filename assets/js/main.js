@@ -5,6 +5,20 @@ const siteNav = document.querySelector('.site-nav');
 const projectRail = document.querySelector('[data-project-rail]');
 const railLinks = [...document.querySelectorAll('[data-project-rail] a')];
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wordmark = document.querySelector('[data-hero]');
+const wordmarkButtons = [...document.querySelectorAll('[data-wordmark-style]')];
+
+wordmarkButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    const style = button.dataset.wordmarkStyle;
+    wordmark?.setAttribute('data-wordmark', style);
+    wordmarkButtons.forEach((option) => {
+      const selected = option === button;
+      option.classList.toggle('is-selected', selected);
+      option.setAttribute('aria-pressed', String(selected));
+    });
+  });
+});
 
 const setActiveProject = (index) => {
   railLinks.forEach((link, linkIndex) => {
