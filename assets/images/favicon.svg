@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">ZL folded ribbon mark</title>
+  <rect width="64" height="64" rx="15" fill="#3d5bdd"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 19c13-3 28 1 44-4L15 49c13-3 27 1 40-3" stroke="#f7f4ec" stroke-width="8"/>
+    <path d="M53 15 15 49" stroke="#cdeb55" stroke-width="3.2"/>
+    <path d="M43 13c3 12 0 24 4 35 4 2 7 0 11-2" stroke="#f33d56" stroke-width="7"/>
+    <path d="M43 13c1 4 2 7 2 11" stroke="#f7f4ec" stroke-width="2.2"/>
+  </g>
+  <circle cx="9" cy="19" r="1.8" fill="#111315"/>
+  <circle cx="58" cy="46" r="1.8" fill="#111315"/>
+</svg>
