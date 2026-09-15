@@ -851,8 +851,21 @@ button, input { font: inherit; }
   text-transform: uppercase;
   will-change: transform;
 }
+.contact-keyword:is(a) {
+  pointer-events: auto;
+  cursor: pointer;
+  transition: color .2s ease, background-color .2s ease, box-shadow .2s ease;
+}
+.contact-keyword:is(a):hover,
+.contact-keyword:is(a):focus-visible {
+  color: var(--cream);
+  background: var(--black);
+  box-shadow: 0 16px 36px rgb(5 7 11 / 22%);
+  outline-offset: 4px;
+}
 .keyword-ece { top: 12%; right: 19%; color: var(--blue); transform: rotate(4deg); }
 .keyword-hkn { right: 7%; bottom: 12%; color: var(--red); transform: rotate(-5deg); }
+.keyword-ieee { top: 11%; left: 10%; color: var(--blue); transform: rotate(3deg); }
 .keyword-ai { bottom: 7%; left: 13%; color: var(--blue); transform: rotate(3deg); }
 .keyword-robotics { top: 16%; left: 25%; color: #78971b; transform: rotate(-4deg); }
 .contact-copyright {
@@ -1062,10 +1075,11 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   .contact-v2 .contact-ribbon { top: 36%; left: -23%; width: 146%; height: 3.6rem; transform: rotate(12deg); }
   .contact-keywords { z-index: 8; }
   .contact-keyword { padding: .46rem .58rem; font-size: .5rem; }
-  .keyword-ece { top: 16%; right: 5%; }
-  .keyword-hkn { top: 25%; right: 4%; bottom: auto; }
-  .keyword-ai { top: 11%; bottom: auto; left: 36%; }
-  .keyword-robotics { top: 20%; left: 5%; }
+  .keyword-ece { top: 25%; right: 4%; }
+  .keyword-hkn { top: 14%; right: 5%; bottom: auto; }
+  .keyword-ieee { top: 11%; left: 5%; }
+  .keyword-ai { top: auto; bottom: 7%; left: 6%; }
+  .keyword-robotics { top: auto; right: 5%; bottom: 17%; left: auto; }
   .contact-actions { gap: .75rem 1rem; margin-top: 1.15rem; font-size: .54rem; }
   .contact-copyright { right: 1rem; bottom: 1rem; left: 1rem; font-size: .5rem; }
   .contact:not(.contact-v2) .contact-circle-blue { width: 80vmin; }
