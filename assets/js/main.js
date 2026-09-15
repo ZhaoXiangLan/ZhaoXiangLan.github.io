@@ -72,7 +72,6 @@ const initMotion = () => {
 
   const hero = document.querySelector('[data-hero]');
   const heroStage = document.querySelector('[data-hero-stage]');
-  const heroWordmark = document.querySelector('.hero-wordmark');
   const nameWords = gsap.utils.toArray('[data-name-word]');
   const taglineParts = gsap.utils.toArray('[data-tagline]');
   const scrollCue = document.querySelector('[data-scroll-cue]');
@@ -94,13 +93,9 @@ const initMotion = () => {
       scrollTrigger: {
         trigger: hero,
         start: 'top top',
-        end: () => `+=${window.innerHeight}`,
-        pin: true,
-        pinSpacing: false,
-        anticipatePin: 1,
+        end: 'bottom top',
         scrub: .85,
-        invalidateOnRefresh: true,
-        onUpdate: ({ progress }) => header?.classList.toggle('is-project', progress > .72),
+        onUpdate: ({ progress }) => header?.classList.toggle('is-project', progress > .76),
         onLeaveBack: () => header?.classList.remove('is-project')
       }
     })
@@ -110,15 +105,7 @@ const initMotion = () => {
         0
       )
       .to(taglineParts, { autoAlpha: 0, y: -24, duration: .2, stagger: .015, ease: 'power1.in' }, .04)
-      .to(heroWordmark, {
-        x: () => -window.innerWidth * .405,
-        y: () => -window.innerHeight * .405,
-        scale: .13,
-        transformOrigin: '50% 50%',
-        duration: .66,
-        ease: 'power2.inOut'
-      }, .05)
-      .to(heroStage, { autoAlpha: 0, duration: .08, ease: 'none' }, .58)
+      .to(heroStage, { autoAlpha: .78, duration: .2, ease: 'none' }, .62)
       .to(headerIdentity, { autoAlpha: 1, y: 0, duration: .18, ease: 'power2.out' }, .72)
       .to(headerLinks, { autoAlpha: 1, y: 0, duration: .18, ease: 'power2.out' }, .74);
   } else {
@@ -170,56 +157,111 @@ const initMotion = () => {
         onEnterBack: () => setActiveProject(index)
       }
     })
-      .fromTo(title, { autoAlpha: 0, scale: .82 }, { autoAlpha: 1, scale: 1, duration: .25, ease: 'power2.out' }, 0)
-      .fromTo([status, label], { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: .2, stagger: .03 }, .08)
+      .fromTo(title, { autoAlpha: 0, scale: .9 }, { autoAlpha: 1, scale: 1, duration: .2, ease: 'power3.out' }, index === 0 ? .3 : .08)
+      .fromTo([status, label], { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: .2, stagger: .03 }, index === 0 ? .38 : .14)
       .to(title, { autoAlpha: .12, scale: 1.08, duration: .22, ease: 'power2.in' }, .78)
       .to([status, label], { autoAlpha: 0, y: -18, duration: .16 }, .82);
 
     figures.forEach((figure) => {
       const speed = Number(figure.dataset.speed || 1);
       const startY = index === 0 ? 105 + Math.abs(speed) * 48 : speed * 48;
-      gsap.fromTo(figure,
-        { yPercent: startY, autoAlpha: index === 0 ? 0 : .2 },
-        {
-          yPercent: speed * -48,
-          autoAlpha: 1,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: scene,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: .9
-          }
+      const figureTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: scene,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: .9
         }
-      );
+      });
+
+      if (index === 0) {
+        figureTimeline
+          .fromTo(figure,
+            { yPercent: startY, autoAlpha: 0 },
+            { yPercent: speed * 8, autoAlpha: 1, duration: .4, ease: 'power3.out' },
+            0
+          )
+          .to(figure, { yPercent: speed * -48, duration: .6, ease: 'none' }, .4);
+      } else {
+        figureTimeline.fromTo(figure,
+          { yPercent: startY, autoAlpha: .2 },
+          { yPercent: speed * -48, autoAlpha: 1, duration: 1, ease: 'none' },
+          0
+        );
+      }
     });
   });
 
   const contact = document.querySelector('#contact');
   if (contact) {
+    const isContactV2 = contact.classList.contains('contact-v2');
+    const ambientTweens = [];
+
+    contact.querySelectorAll('[data-contact-float]').forEach((keyword, index) => {
+      ambientTweens.push(gsap.to(keyword, {
+        x: () => gsap.utils.random(-28, 28),
+        y: () => gsap.utils.random(-22, 22),
+        rotation: () => gsap.utils.random(-7, 7),
+        duration: 4.8 + index * .7,
+        repeat: -1,
+        repeatRefresh: true,
+        yoyo: true,
+        ease: 'sine.inOut',
+        paused: true
+      }));
+    });
+
+    ambientTweens.push(
+      gsap.to(contact.querySelector('.contact-circle-red'), { x: -10, y: 14, duration: 7, repeat: -1, yoyo: true, ease: 'sine.inOut', paused: true }),
+      gsap.to(contact.querySelector('.contact-circle-lime'), { x: 12, y: -16, duration: 6, repeat: -1, yoyo: true, ease: 'sine.inOut', paused: true })
+    );
+
     window.ScrollTrigger.create({
       trigger: contact,
       start: 'top 52%',
       end: 'bottom top',
-      onToggle: ({ isActive }) => document.body.classList.toggle('contact-in-view', isActive)
+      onToggle: ({ isActive }) => {
+        document.body.classList.toggle('contact-in-view', isActive);
+        ambientTweens.forEach((tween) => isActive ? tween.play() : tween.pause());
+      }
     });
 
-    gsap.timeline({
+    const contactEntrance = gsap.timeline({
       scrollTrigger: {
         trigger: contact,
-        start: 'top 78%',
-        end: 'top 12%',
+        start: isContactV2 ? 'top 100%' : 'top 78%',
+        end: isContactV2 ? 'top 55%' : 'top 12%',
         scrub: .8
       }
     })
       .from('.contact-circle', { scale: .55, autoAlpha: 0, stagger: .055, ease: 'power2.out' }, 0)
-      .from('.contact-ribbon', { xPercent: -24, autoAlpha: 0, ease: 'power2.out' }, .08)
-      .from('.contact-ghost', { scale: .86, autoAlpha: 0, ease: 'power2.out' }, .12)
-      .from('.contact-content', { y: 42, autoAlpha: 0, ease: 'power3.out' }, .18);
+      .from('.contact-ribbon', { xPercent: -24, autoAlpha: 0, ease: 'power2.out' }, .08);
 
-    gsap.to('.contact-circle-red', { x: -10, y: 14, duration: 7, repeat: -1, yoyo: true, ease: 'sine.inOut' });
-    gsap.to('.contact-circle-lime', { x: 12, y: -16, duration: 6, repeat: -1, yoyo: true, ease: 'sine.inOut' });
-    gsap.to('.contact-ribbon', { xPercent: 1.6, duration: 5.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+    if (isContactV2) {
+      contactEntrance
+        .from('.contact-intro', { y: 30, autoAlpha: 0, ease: 'power3.out' }, .12)
+        .from('.contact-content', { y: 42, autoAlpha: 0, ease: 'power3.out' }, .18);
+
+      gsap.fromTo(contact.querySelector('.contact-copyright'),
+        { autoAlpha: 0, y: 24 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: contact,
+            start: () => window.matchMedia('(max-width: 600px)').matches ? 'bottom 118%' : 'bottom 111%',
+            end: () => window.matchMedia('(max-width: 600px)').matches ? 'bottom 100%' : 'bottom 103%',
+            scrub: .6,
+            invalidateOnRefresh: true
+          }
+        }
+      );
+    } else {
+      contactEntrance
+        .from('.contact-ghost', { scale: .86, autoAlpha: 0, ease: 'power2.out' }, .12)
+        .from('.contact-content', { y: 42, autoAlpha: 0, ease: 'power3.out' }, .18);
+    }
   }
 
   if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
