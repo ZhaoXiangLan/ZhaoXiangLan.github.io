@@ -198,7 +198,7 @@ const initMotion = () => {
     const ambientTweens = [];
 
     contact.querySelectorAll('[data-contact-float]').forEach((keyword, index) => {
-      ambientTweens.push(gsap.to(keyword, {
+      const floatTween = gsap.to(keyword, {
         x: () => gsap.utils.random(-28, 28),
         y: () => gsap.utils.random(-22, 22),
         rotation: () => gsap.utils.random(-7, 7),
@@ -208,7 +208,21 @@ const initMotion = () => {
         yoyo: true,
         ease: 'sine.inOut',
         paused: true
-      }));
+      });
+
+      ambientTweens.push(floatTween);
+
+      if (keyword.matches('a')) {
+        const pauseFloat = () => floatTween.pause();
+        const resumeFloat = () => {
+          if (document.body.classList.contains('contact-in-view')) floatTween.play();
+        };
+
+        keyword.addEventListener('pointerenter', pauseFloat);
+        keyword.addEventListener('pointerleave', resumeFloat);
+        keyword.addEventListener('focus', pauseFloat);
+        keyword.addEventListener('blur', resumeFloat);
+      }
     });
 
     ambientTweens.push(
