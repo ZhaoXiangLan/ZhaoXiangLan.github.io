@@ -146,25 +146,44 @@ const initMotion = () => {
     const status = scene.querySelector('.project-status');
     const label = scene.querySelector('.project-label');
     const figures = gsap.utils.toArray('[data-float]', scene);
+    const secondaryCopy = [status, label].filter(Boolean);
 
-    gsap.timeline({
+    window.ScrollTrigger.create({
+      trigger: scene,
+      start: 'top 55%',
+      end: 'bottom 55%',
+      onEnter: () => setActiveProject(index),
+      onLeaveBack: () => setActiveProject(Math.max(0, index - 1))
+    });
+
+    const sceneTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: scene,
         start: 'top bottom',
         end: 'bottom top',
-        scrub: .75,
-        onEnter: () => setActiveProject(index),
-        onEnterBack: () => setActiveProject(index)
+        scrub: .75
       }
-    })
-      .fromTo(title, { autoAlpha: 0, scale: .9 }, { autoAlpha: 1, scale: 1, duration: .2, ease: 'power3.out' }, index === 0 ? .3 : .08)
-      .fromTo([status, label], { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: .2, stagger: .03 }, index === 0 ? .38 : .14)
-      .to(title, { autoAlpha: .12, scale: 1.08, duration: .22, ease: 'power2.in' }, .78)
-      .to([status, label], { autoAlpha: 0, y: -18, duration: .16 }, .82);
+    });
+
+    sceneTimeline.fromTo(title, { autoAlpha: 0, scale: .9 }, { autoAlpha: 1, scale: 1, duration: .2, ease: 'power3.out' }, index === 0 ? .3 : .08);
+    if (secondaryCopy.length) {
+      sceneTimeline.fromTo(secondaryCopy, { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: .2, stagger: .03 }, index === 0 ? .38 : .14);
+    }
+    sceneTimeline.to(title, { autoAlpha: .12, scale: 1.08, duration: .22, ease: 'power2.in' }, .78);
+    if (secondaryCopy.length) {
+      sceneTimeline.to(secondaryCopy, { autoAlpha: 0, y: -18, duration: .16 }, .82);
+    }
 
     figures.forEach((figure) => {
       const speed = Number(figure.dataset.speed || 1);
-      const startY = index === 0 ? 105 + Math.abs(speed) * 48 : speed * 48;
+      const configuredStartY = Number(figure.dataset.startY);
+      const configuredStartOpacity = Number(figure.dataset.startOpacity);
+      const startY = index === 0 && Number.isFinite(configuredStartY)
+        ? configuredStartY
+        : index === 0 ? 72 + Math.abs(speed) * 24 : speed * 48;
+      const startOpacity = index === 0 && Number.isFinite(configuredStartOpacity)
+        ? configuredStartOpacity
+        : index === 0 ? 0 : .2;
       const figureTimeline = gsap.timeline({
         scrollTrigger: {
           trigger: scene,
@@ -177,7 +196,7 @@ const initMotion = () => {
       if (index === 0) {
         figureTimeline
           .fromTo(figure,
-            { yPercent: startY, autoAlpha: 0 },
+            { yPercent: startY, autoAlpha: startOpacity },
             { yPercent: speed * 8, autoAlpha: 1, duration: .4, ease: 'power3.out' },
             0
           )
@@ -305,6 +324,25 @@ const initMotion = () => {
 };
 
 initMotion();
+
+const projectEntry = document.querySelector('[data-project-entry]');
+const projectCursor = document.querySelector('[data-project-cursor]');
+const supportsProjectCursor = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+if (projectEntry && projectCursor && supportsProjectCursor) {
+  const placeCursor = (event) => {
+    projectCursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0) translate(-50%, -50%)`;
+  };
+
+  projectEntry.addEventListener('pointerenter', (event) => {
+    placeCursor(event);
+    projectCursor.classList.add('is-visible');
+  });
+  projectEntry.addEventListener('pointermove', placeCursor);
+  projectEntry.addEventListener('pointerleave', () => projectCursor.classList.remove('is-visible'));
+  projectEntry.addEventListener('pointerdown', () => projectCursor.classList.add('is-pressed'));
+  projectEntry.addEventListener('pointerup', () => projectCursor.classList.remove('is-pressed'));
+}
 
 const year = document.querySelector('[data-year]');
 if (year) year.textContent = new Date().getFullYear();

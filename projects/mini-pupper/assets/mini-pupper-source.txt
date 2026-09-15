@@ -1,0 +1,12 @@
+Asset: mini-pupper-sticker.png
+Source image: Doc/imgs/MiniPupper.png
+Source repository: https://github.com/mangdangroboticsclub/QuadrupedRobot
+Source owner: MangDang Technology / mangdangroboticsclub
+Source license: MIT License (repository LICENSE)
+Modification: cream die-cut edge and drop shadow applied with CSS.
+Retrieved: 2026-09-15
+
+Docker logo source: https://cdn.simpleicons.org/docker/2496ED
+ROS logo source: https://cdn.simpleicons.org/ros/22314E
+Icon collection: Simple Icons, https://simpleicons.org/
+Trademark note: Docker and the Docker logo are trademarks or registered trademarks of Docker, Inc. ROS and the nine-dot logo are trademarks of Open Robotics.

@@ -13,13 +13,15 @@ There is no package manager, build step, or generated output. All site files are
 
 ## Local preview
 
-From the repository directory, start any static file server. For example:
+From the repository directory, start a static file server. With Node.js installed:
 
 ```powershell
-python -m http.server 8000
+npx serve .
 ```
 
-Then visit `http://localhost:8000`.
+Open the localhost URL printed by the command. VS Code Live Server also works.
+Do not use `file://` for navigation testing because clean directory routes rely on
+the server resolving each folder's `index.html`.
 
 ## Deploy to GitHub Pages
 
@@ -32,11 +34,20 @@ The site will be available at <https://zhaoxianglan.github.io/> after GitHub fin
 
 ## Content map
 
-- `index.html` — all page content and metadata
-- `assets/css/styles.css` — layout, theme, and responsive rules
-- `assets/js/main.js` — navigation, active section, and reveal enhancements
-- `assets/images/` — profile image and favicon
+- `index.html` — homepage
+- `about/index.html` — clean `/about/` route
+- `contact/index.html` — clean `/contact/` route
+- `contact/assets/` — contact-only documents, including the resume
+- `work/index.html` — clean `/work/` route
+- `projects/mini-pupper/index.html` — Mini-Pupper project page
+- `projects/mini-pupper/assets/` — Mini-Pupper-only images and source material
+- `assets/css/styles.css` — shared layout, theme, and responsive rules
+- `assets/js/main.js` — shared navigation, active section, and reveal enhancements
+- `assets/images/` — shared identity images and favicon
 - `404.html` — GitHub Pages fallback page
+
+The root-level `about.html`, `contact.html`, `work.html`, and `mini-pupper.html`
+files are compatibility redirects for old links. New internal links use directory routes.
 
 ## Previous site backup
 
