@@ -404,6 +404,138 @@ button, input { font: inherit; }
   color: var(--cream);
   background: var(--project-one-surface);
 }
+.mini-pupper-entry {
+  display: block;
+  color: inherit;
+}
+.mini-pupper-entry:focus-visible {
+  outline: 3px solid var(--lime);
+  outline-offset: -7px;
+}
+.scene-one .project-title {
+  z-index: 7;
+  font-size: clamp(6rem, 13vw, 13rem);
+  letter-spacing: -.065em;
+}
+.scene-one .project-figure { z-index: 5; }
+.mini-pupper-robot {
+  top: 11%;
+  left: 5%;
+  width: min(43vw, 650px);
+  transform: rotate(-5deg);
+}
+.mini-pupper-robot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter:
+    drop-shadow(.32rem 0 0 var(--cream))
+    drop-shadow(-.32rem 0 0 var(--cream))
+    drop-shadow(0 .32rem 0 var(--cream))
+    drop-shadow(0 -.32rem 0 var(--cream))
+    drop-shadow(0 1.4rem 1.7rem rgb(5 7 11 / 26%));
+}
+.mini-pupper-code-sticker {
+  top: auto;
+  right: auto;
+  bottom: 6%;
+  left: 7%;
+  width: min(31vw, 440px);
+  padding: .48rem;
+  border-radius: .9rem 1.15rem .85rem 1.05rem;
+  background: var(--cream);
+  box-shadow: 0 1.25rem 2rem rgb(5 7 11 / 22%);
+  transform: rotate(4deg);
+}
+.mini-pupper-code-sticker img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: .48rem;
+}
+.mini-pupper-logo-sticker {
+  display: grid;
+  width: clamp(6rem, 9vw, 8.5rem);
+  aspect-ratio: 1;
+  place-items: center;
+  padding: 1.1rem;
+  border-radius: 44% 56% 50% 48% / 51% 45% 55% 49%;
+  color: var(--black);
+  background: var(--cream);
+  box-shadow: 0 1rem 1.8rem rgb(5 7 11 / 20%);
+}
+.mini-pupper-logo-sticker img { display: block; width: 68%; height: 68%; }
+.mini-pupper-logo-sticker span {
+  position: absolute;
+  bottom: .55rem;
+  font: 800 .52rem / 1 var(--mono);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.mini-pupper-docker { top: 12%; right: 8%; bottom: auto; transform: rotate(6deg); }
+.mini-pupper-ros { top: 20%; right: 25%; transform: rotate(-8deg); }
+.mini-pupper-ros img { width: 62%; height: 62%; }
+.mini-pupper-motion-sticker {
+  right: 9%;
+  bottom: 6%;
+  display: flex;
+  width: min(24vw, 350px);
+  min-height: 8.5rem;
+  flex-wrap: wrap;
+  align-content: center;
+  gap: .55rem .75rem;
+  padding: 1.2rem 1.4rem;
+  border: .55rem solid var(--cream);
+  border-radius: 46% 54% 42% 58% / 55% 42% 58% 45%;
+  color: var(--black);
+  background: var(--lime);
+  box-shadow: 0 1.25rem 2rem rgb(5 7 11 / 20%);
+  transform: rotate(-6deg);
+}
+.mini-pupper-motion-sticker b {
+  flex-basis: 100%;
+  font-size: clamp(1.35rem, 2.8vw, 2.8rem);
+  font-weight: 900;
+  letter-spacing: -.04em;
+  line-height: .73;
+}
+.mini-pupper-motion-sticker span {
+  font: 700 clamp(.56rem, .8vw, .72rem) / 1 var(--mono);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.project-open-cursor {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: auto;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  color: var(--black);
+  background: var(--lime);
+  box-shadow: 0 .9rem 2rem rgb(5 7 11 / 20%);
+  font: 800 .64rem / 1 var(--mono);
+  letter-spacing: .035em;
+  text-transform: uppercase;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(-10rem, -10rem, 0);
+  white-space: nowrap;
+  transition: opacity .18s ease, background-color .18s ease;
+}
+.project-open-cursor b { font-size: 1rem; }
+.project-open-cursor.is-visible { opacity: 1; }
+.project-open-cursor.is-pressed { background: var(--cream); }
+
+@media (hover: hover) and (pointer: fine) {
+  .mini-pupper-entry { cursor: none; }
+}
 .scene-two .project-viewport {
   --viewport-seam: #566bc1;
   --title-stroke: var(--cream);
@@ -497,6 +629,22 @@ button, input { font: inherit; }
 .figure-a { top: 15%; left: 13%; width: min(38vw, 550px); }
 .figure-b { top: 13%; right: 12%; width: min(18vw, 245px); }
 .figure-c { right: 18%; bottom: 8%; width: min(16vw, 210px); }
+.scene-one .mini-pupper-robot { top: 11%; left: 5%; width: min(43vw, 650px); }
+.scene-one .mini-pupper-code-sticker { top: auto; right: auto; bottom: 6%; left: 7%; width: min(31vw, 440px); }
+.scene-one .mini-pupper-docker { top: 12%; right: 8%; bottom: auto; left: auto; width: clamp(6rem, 9vw, 8.5rem); }
+.scene-one .mini-pupper-ros { top: 20%; right: 25%; bottom: auto; left: auto; width: clamp(6rem, 9vw, 8.5rem); }
+.scene-one .mini-pupper-motion-sticker { top: auto; right: 9%; bottom: 6%; left: auto; width: min(24vw, 350px); }
+.scene-one .figure-number {
+  z-index: 4;
+  color: var(--cream);
+  opacity: .74;
+  text-shadow: 0 .2rem .55rem rgb(5 7 11 / 35%);
+}
+.scene-one .mini-pupper-robot .figure-number { top: calc(100% + .35rem); left: 12%; }
+.scene-one .mini-pupper-code-sticker .figure-number { top: .45rem; left: calc(100% + .75rem); }
+.scene-one .mini-pupper-docker .figure-number { top: 50%; left: calc(100% + .65rem); transform: translateY(-50%); }
+.scene-one .mini-pupper-ros .figure-number { top: 50%; right: calc(100% + .65rem); left: auto; transform: translateY(-50%); }
+.scene-one .mini-pupper-motion-sticker .figure-number { top: .55rem; left: calc(100% + .7rem); }
 .scene-two .figure-a { top: 11%; left: 12%; width: min(33vw, 480px); }
 .scene-two .figure-b { top: 38%; right: 13%; width: min(17vw, 230px); }
 .scene-two .figure-c { right: auto; bottom: 9%; left: 24%; width: min(18vw, 250px); }
@@ -1003,6 +1151,11 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   .figure-a { left: 4%; width: min(56vw, 450px); }
   .figure-b { right: 4%; width: min(27vw, 210px); }
   .figure-c { right: 8%; width: min(25vw, 190px); }
+  .scene-one .mini-pupper-robot { left: 2%; width: min(56vw, 560px); }
+  .scene-one .mini-pupper-code-sticker { right: auto; width: min(36vw, 360px); }
+  .scene-one .mini-pupper-motion-sticker { right: 5%; width: min(27vw, 250px); }
+  .scene-one .mini-pupper-docker { right: 4%; }
+  .scene-one .mini-pupper-ros { right: 23%; }
   .scene-two .figure-a, .scene-three .figure-a { left: 5%; width: min(55vw, 440px); }
   .scene-two .figure-b, .scene-three .figure-b { right: 5%; width: min(26vw, 200px); }
   .scene-two .figure-c { left: 12%; width: min(29vw, 220px); }
@@ -1055,6 +1208,79 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   .project-figure.figure-c { grid-column: 2; width: 70%; justify-self: center; }
   .project-status + .figure-a { margin-top: 1rem; }
   .placeholder-disc { border-width: 1.4rem; }
+  .scene-one .project-viewport {
+    min-height: max(820px, 125svh);
+    grid-template-rows: 4rem minmax(13rem, .8fr) auto auto auto;
+    gap: .3rem 1rem;
+    padding-top: 5.5rem;
+  }
+  .scene-one .project-title {
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    width: 100%;
+    font-size: 18vw;
+    transform: translate(-50%, -50%);
+  }
+  .scene-one .project-figure { position: relative; }
+  .scene-one .mini-pupper-robot {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    width: 96%;
+    align-self: end;
+    justify-self: center;
+  }
+  .scene-one .mini-pupper-code-sticker {
+    grid-row: 3;
+    grid-column: 1 / -1;
+    width: 92%;
+    justify-self: center;
+    padding: .35rem;
+  }
+  .scene-one .mini-pupper-logo-sticker {
+    grid-row: 3;
+    width: 6.2rem;
+    align-self: end;
+  }
+  .scene-one .mini-pupper-docker { grid-column: 1; grid-row: 4; justify-self: center; }
+  .scene-one .mini-pupper-ros { grid-column: 2; grid-row: 4; justify-self: center; }
+  .scene-one .mini-pupper-motion-sticker {
+    grid-row: 5;
+    grid-column: 1 / -1;
+    width: 58%;
+    min-height: 7rem;
+    justify-self: center;
+    padding: .85rem;
+    border-width: .38rem;
+  }
+  .scene-one .mini-pupper-motion-sticker b { font-size: clamp(1.2rem, 7vw, 2rem); }
+  .scene-one .figure-number,
+  .scene-one .mini-pupper-robot .figure-number,
+  .scene-one .mini-pupper-code-sticker .figure-number,
+  .scene-one .mini-pupper-docker .figure-number,
+  .scene-one .mini-pupper-ros .figure-number,
+  .scene-one .mini-pupper-motion-sticker .figure-number {
+    top: auto;
+    right: auto;
+    bottom: -1.15rem;
+    left: .4rem;
+    transform: none;
+  }
+  .scene-one .mini-pupper-robot .figure-number,
+  .scene-one .mini-pupper-code-sticker .figure-number {
+    top: .55rem;
+    right: .65rem;
+    bottom: auto;
+    left: auto;
+  }
+  .scene-one .mini-pupper-ros .figure-number {
+    top: .5rem;
+    right: .55rem;
+    bottom: auto;
+    left: auto;
+    color: var(--black);
+    text-shadow: none;
+  }
 
   .page-contact .site-header { justify-content: flex-end; }
   .page-contact .site-nav a { padding-right: .55rem; padding-left: .55rem; font-size: .57rem; }
@@ -1091,6 +1317,81 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   .contact:not(.contact-v2) h1 em, .contact:not(.contact-v2) h2 em { margin-left: 13%; font-size: 1.38em; }
   .contact-footer { grid-template-columns: 1fr auto; }
   .contact-footer > a:nth-child(2) { display: none; }
+}
+
+.page-project-detail {
+  min-height: 100svh;
+  color: var(--cream);
+  background: var(--project-one-surface);
+}
+.mini-pupper-detail {
+  position: relative;
+  display: grid;
+  min-height: 100svh;
+  grid-template-columns: minmax(0, .8fr) minmax(22rem, 1.2fr);
+  align-items: center;
+  gap: 2rem;
+  overflow: hidden;
+  padding: 7.5rem clamp(1.5rem, 5vw, 5rem) 3rem;
+}
+.mini-pupper-detail::before {
+  content: "";
+  position: absolute;
+  right: -8vw;
+  bottom: -28vw;
+  width: 54vw;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--red);
+}
+.mini-pupper-detail-copy { position: relative; z-index: 2; }
+.mini-pupper-detail h1 {
+  margin: 0;
+  font-size: clamp(5.2rem, 10vw, 10rem);
+  font-weight: 500;
+  letter-spacing: -.04em;
+  line-height: .72;
+  text-transform: uppercase;
+}
+.mini-pupper-detail-copy p {
+  margin: 2rem 0 .5rem;
+  font: 700 clamp(.66rem, 1vw, .82rem) / 1.5 var(--mono);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.mini-pupper-detail-copy > span { color: rgb(247 244 236 / 70%); font-size: .9rem; }
+.mini-pupper-detail > img {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 58rem);
+  height: auto;
+  filter: drop-shadow(0 2rem 2.5rem rgb(5 7 11 / 28%));
+  transform: rotate(-4deg);
+}
+.mini-pupper-back {
+  position: absolute;
+  z-index: 3;
+  right: clamp(1.5rem, 5vw, 5rem);
+  bottom: 2rem;
+  font: 700 .62rem / 1 var(--mono);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.mini-pupper-back span { margin-left: .4rem; font-size: 1rem; }
+
+@media (max-width: 700px) {
+  .page-project-detail .site-header { justify-content: flex-end; }
+  .page-project-detail .header-links { display: none; }
+  .mini-pupper-detail {
+    grid-template-columns: 1fr;
+    align-content: center;
+    gap: 2.8rem;
+    padding: 7rem 1rem 4.5rem;
+  }
+  .mini-pupper-detail h1 { font-size: 21vw; }
+  .mini-pupper-detail-copy p { margin-top: 1.4rem; }
+  .mini-pupper-detail > img { width: 112%; max-width: none; margin-left: -6%; }
+  .mini-pupper-detail::before { right: -42vw; bottom: -28vw; width: 100vw; }
 }
 
 @media (prefers-reduced-motion: reduce) {
