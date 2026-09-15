@@ -1093,10 +1093,6 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   .contact-footer > a:nth-child(2) { display: none; }
 }
 
-@media (hover: none) {
-  .project-figure { transform: none !important; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {
