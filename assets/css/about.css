@@ -297,25 +297,37 @@
   .page-about .header-identity,
   .page-about .header-links { display: none; }
   .about-stage { min-height: 620px; }
-  .about-wall-title { top: 49%; }
-  .about-wall-title h1 { font-size: 20vw; line-height: .68; }
+  .about-wall-title { top: 46%; }
+  .about-wall-title h1 { font-size: clamp(3.35rem, 16.5vw, 4.5rem); line-height: .7; }
   .about-wall-title .line-two { margin-left: 0; }
   .about-wall-title p,
   .about-hint { display: none; }
-  .hobby-sticker { scale: .55; }
-  .nikon { top: 13%; left: -12%; }
-  .dji { top: 18%; left: 31%; }
-  .racket { top: 12%; right: 0; }
-  .pc { bottom: 7%; left: -13%; }
-  .billiards { bottom: 14%; left: 24%; }
-  .plant { right: 17%; bottom: 7%; }
-  .aquarium { right: -25%; bottom: 5%; }
+  .sticker-name em { display: none; }
+  .object-sticker .sticker-name { gap: .3rem; padding: .32rem .38rem; border-width: 1.5px; font-size: .43rem; box-shadow: 2px 3px 0 var(--about-ink); }
+  .nikon { top: 13%; left: -4%; width: 7rem; }
+  .dji { top: 17%; left: 35%; width: 5.2rem; }
+  .racket { top: 12%; right: 3%; width: 3.8rem; }
+  .pc { bottom: 1%; left: -4%; width: 6rem; }
+  .billiards { bottom: 16%; left: 24%; width: 6rem; }
+  .plant { right: 19%; bottom: 15%; width: 5rem; }
+  .aquarium { right: -10%; bottom: 1%; width: 9.5rem; }
   .about-counter { right: .85rem; gap: .45rem; }
   .about-counter > span,
   .about-counter i { display: none; }
   .about-scroll-cue { left: .85rem; max-width: 58vw; line-height: 1.45; }
   .about-scroll-cue::before { width: 1.8rem; }
-  .about-done { width: max-content; max-width: calc(100vw - 2rem); font-size: .52rem; transform: translate(-50%, 150px) rotate(-3deg); }
+  .about-done { width: max-content; max-width: calc(100vw - 2rem); padding: .55rem .7rem; font-size: .46rem; transform: translate(-50%, 132px) rotate(-3deg); }
+}
+
+@media (max-width: 360px) {
+  .about-wall-title h1 { font-size: 15.5vw; }
+  .nikon { left: -6%; width: 6.6rem; }
+  .dji { left: 34%; width: 4.8rem; }
+  .racket { right: 2%; width: 3.5rem; }
+  .pc { left: -5%; width: 5.5rem; }
+  .billiards { left: 23%; width: 5.5rem; }
+  .plant { right: 19%; width: 4.6rem; }
+  .aquarium { right: -11%; width: 8.8rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
