@@ -1575,3 +1575,134 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   .scroll-marquee-group:first-child > span:not(:first-child),
   .scroll-marquee-group[aria-hidden="true"] { display: none; }
 }
+
+/* Standalone contact — same visual language as the home hero. */
+.page-contact {
+  color: var(--cream);
+  background: var(--black);
+}
+.page-contact .contact-v2 {
+  min-height: max(700px, 100svh);
+  overflow: hidden;
+  color: var(--cream);
+  background: var(--home-surface);
+  box-shadow: none;
+}
+.page-contact .contact-v2::before,
+.page-contact .contact-art,
+.page-contact .contact-keywords { display: none; }
+.page-contact .contact-stage {
+  height: max(700px, 100svh);
+  min-height: 700px;
+  overflow: hidden;
+}
+.page-contact .contact-stage::before,
+.page-contact .contact-stage::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+}
+.page-contact .contact-stage::before {
+  background-image:
+    linear-gradient(rgb(255 255 255 / 3%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 3%) 1px, transparent 1px);
+  background-size: 60px 60px;
+  -webkit-mask-image: radial-gradient(circle at center, #000, transparent 82%);
+  mask-image: radial-gradient(circle at center, #000, transparent 82%);
+}
+.page-contact .contact-stage::after {
+  background:
+    linear-gradient(180deg, rgb(5 7 11 / 8%), transparent 28% 72%, rgb(61 91 221 / 18%)),
+    linear-gradient(90deg, rgb(5 7 11 / 16%), transparent 20% 80%, rgb(5 7 11 / 16%));
+}
+.page-contact .contact-v2 .contact-content { z-index: 5; }
+.page-contact .contact-v2 h1 {
+  top: 39%;
+  padding: 0 clamp(1rem, 4vw, 4rem);
+  color: transparent;
+  font-family: "Instrument Serif", var(--serif);
+  font-size: clamp(5rem, 10.4vw, 10.6rem);
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: -.045em;
+  line-height: .68;
+  text-shadow: .045em .045em 0 var(--red), .09em .09em 0 var(--lime);
+  paint-order: stroke fill;
+  -webkit-text-stroke: clamp(1px, .1vw, 1.5px) var(--cream);
+  transform: translate(-50%, -50%) rotate(-1deg);
+}
+.page-contact .contact-v2 h1 em {
+  margin-left: 11%;
+  color: transparent;
+  font: inherit;
+  font-size: 1em;
+  text-shadow: inherit;
+  -webkit-text-stroke: inherit;
+}
+.page-contact .contact-info {
+  top: 61%;
+  grid-template-columns: minmax(0, 1.3fr) minmax(15rem, .7fr);
+  gap: clamp(2.5rem, 7vw, 7rem);
+  width: min(78rem, calc(100% - clamp(3rem, 12vw, 12rem)));
+}
+.page-contact .contact-intro {
+  color: rgb(247 244 236 / 62%);
+  font-size: clamp(.9rem, 1.2vw, 1.15rem);
+}
+.page-contact .contact-location {
+  color: var(--cream);
+  font-family: var(--mono);
+  font-size: .74em;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.page-contact .contact-email {
+  color: var(--cream);
+  font-size: clamp(2rem, 3.6vw, 3.8rem);
+}
+.page-contact .contact-email::after { background: var(--lime); }
+.page-contact .contact-resources { color: rgb(247 244 236 / 76%); }
+.page-contact .contact-resume {
+  border-bottom: 1px solid rgb(247 244 236 / 20%);
+  color: var(--cream);
+}
+.page-contact .contact-actions { color: rgb(247 244 236 / 62%); }
+.page-contact .contact-actions a:hover,
+.page-contact .contact-actions a:focus-visible { color: var(--cream); }
+.page-contact .contact-copyright { color: rgb(247 244 236 / 46%); }
+.page-contact .contact-copyright a:hover { color: var(--cream); }
+.page-contact.contact-in-view .header-identity span,
+.page-contact.contact-in-view .header-links { color: rgb(247 244 236 / 62%); }
+.page-contact.contact-in-view .header-links a:hover { color: var(--cream); }
+
+@media (max-width: 600px) {
+  .page-contact .site-header { justify-content: center; }
+  .page-contact .header-identity,
+  .page-contact .header-links { display: none; }
+  .page-contact .contact-v2 { min-height: max(700px, 100svh); }
+  .page-contact .contact-stage { height: max(700px, 100svh); min-height: 700px; }
+  .page-contact .contact-v2 h1 {
+    top: 33%;
+    padding: 0 .7rem;
+    font-size: clamp(4rem, 20vw, 5.7rem);
+    line-height: .66;
+  }
+  .page-contact .contact-v2 h1 em { margin-left: 0; }
+  .page-contact .contact-info {
+    top: 51%;
+    grid-template-columns: 1fr;
+    gap: 1.45rem;
+    width: calc(100% - 2rem);
+    text-align: center;
+  }
+  .page-contact .contact-intro { font-size: .9rem; }
+  .page-contact .contact-intro p + p { width: min(100%, 27rem); margin-right: auto; margin-left: auto; }
+  .page-contact .contact-email { margin-top: 1rem; font-size: clamp(1.55rem, 7.2vw, 2.2rem); }
+  .page-contact .contact-resources { width: min(18rem, 86vw); margin: 0 auto; text-align: left; }
+  .page-contact .contact-resume { font-size: 1.6rem; }
+  .page-contact .contact-actions { justify-content: center; margin-top: 1rem; }
+  .page-contact .contact-copyright { bottom: 1rem; }
+}
