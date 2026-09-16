@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/styles.css?v=20260915-5">
+    <link rel="stylesheet" href="assets/css/styles.css?v=20260915-6">
     <title>ZhaoXiang Lan</title>
   </head>
   <body>
@@ -39,8 +39,8 @@
 
     <aside class="project-rail" aria-label="Project index" data-project-rail>
       <a class="is-active" href="#project-01"><span>Fig. 01-05</span> Mini-Pupper</a>
-      <a href="#project-02"><span>Fig. 06–08</span> Project 02</a>
-      <a href="#project-03"><span>Fig. 09–11</span> Project 03</a>
+      <a href="#project-02"><span>Fig. 06-09</span> Movie Data Explorer</a>
+      <a href="#project-03"><span>Fig. 10-12</span> Project 03</a>
     </aside>
 
     <div id="smooth-wrapper">
@@ -108,29 +108,29 @@
         </article>
 
         <article class="project-scene scene-two" id="project-02" data-project="1">
-          <div class="project-viewport">
-            <div class="project-label"><span>Selected work</span><span>02 / 03</span></div>
-            <h2 class="project-title" data-project-title>Project Two</h2>
-            <p class="project-status">Documentation in progress</p>
+          <a class="project-viewport project-entry movie-data-entry" href="projects/movie-data-explorer/" data-project-entry aria-label="Open the Movie Data Explorer project">
+            <h2 class="project-title" data-project-title>Movie Data Explorer</h2>
 
-            <div class="project-figure figure-a" data-float data-speed="-.85">
-              <span class="figure-number">Fig. 06</span>
-              <div class="placeholder-screen placeholder-red">
-                <div class="screen-bar"><i></i><i></i><i></i></div>
-                <div class="data-row"><span></span><span></span><span></span><span></span></div>
-              </div>
-            </div>
+            <figure class="project-figure movie-data-figure movie-data-cli" data-float data-speed="-.82">
+              <img src="projects/movie-data-explorer/assets/cli-sticker.png" alt="Movie Data Explorer command-line interface" width="1495" height="1052" loading="lazy" decoding="async">
+              <figcaption class="figure-number">Fig. 06</figcaption>
+            </figure>
 
-            <div class="project-figure figure-b" data-float data-speed=".8">
-              <span class="figure-number">Fig. 07</span>
-              <div class="placeholder-disc"><span>02</span></div>
-            </div>
+            <figure class="project-figure movie-data-figure movie-data-graph" data-float data-speed=".7" aria-hidden="true">
+              <img src="projects/movie-data-explorer/assets/graph-bfs-sticker.png" alt="" width="1482" height="1062" loading="lazy" decoding="async">
+              <figcaption class="figure-number">Fig. 07</figcaption>
+            </figure>
 
-            <div class="project-figure figure-c" data-float data-speed="-.45">
-              <span class="figure-number">Fig. 08</span>
-              <div class="placeholder-note">WORK<br>IN<br>PROGRESS</div>
-            </div>
-          </div>
+            <figure class="project-figure movie-data-figure movie-data-hash" data-float data-speed="-.52" aria-hidden="true">
+              <img src="projects/movie-data-explorer/assets/hash-table-sticker.png" alt="" width="1774" height="887" loading="lazy" decoding="async">
+              <figcaption class="figure-number">Fig. 08</figcaption>
+            </figure>
+
+            <figure class="project-figure movie-data-figure movie-data-reel" data-float data-speed=".46" aria-hidden="true">
+              <img src="projects/movie-data-explorer/assets/movie-data-sticker.png" alt="" width="1254" height="1254" loading="lazy" decoding="async">
+              <figcaption class="figure-number">Fig. 09</figcaption>
+            </figure>
+          </a>
         </article>
 
         <article class="project-scene scene-three" id="project-03" data-project="2">
@@ -140,7 +140,7 @@
             <p class="project-status">Details coming soon</p>
 
             <div class="project-figure figure-a" data-float data-speed=".95">
-              <span class="figure-number">Fig. 09</span>
+              <span class="figure-number">Fig. 10</span>
               <div class="placeholder-screen placeholder-lime">
                 <div class="screen-bar"><i></i><i></i><i></i></div>
                 <div class="screen-grid"><span></span><span></span><span></span><span></span></div>
@@ -148,12 +148,12 @@
             </div>
 
             <div class="project-figure figure-b" data-float data-speed="-.65">
-              <span class="figure-number">Fig. 10</span>
+              <span class="figure-number">Fig. 11</span>
               <div class="placeholder-card card-dark"><b>03</b><span>NEXT<br>BUILD</span></div>
             </div>
 
             <div class="project-figure figure-c" data-float data-speed=".5">
-              <span class="figure-number">Fig. 11</span>
+              <span class="figure-number">Fig. 12</span>
               <div class="placeholder-stamp">ZL<br><small>ENGINEERING</small></div>
             </div>
           </div>
@@ -185,6 +185,6 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollSmoother.min.js" defer></script>
-    <script src="assets/js/main.js?v=20260915-4" defer></script>
+    <script src="assets/js/main.js?v=20260915-5" defer></script>
   </body>
 </html>

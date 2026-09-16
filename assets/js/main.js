@@ -325,23 +325,25 @@ const initMotion = () => {
 
 initMotion();
 
-const projectEntry = document.querySelector('[data-project-entry]');
+const projectEntries = [...document.querySelectorAll('[data-project-entry]')];
 const projectCursor = document.querySelector('[data-project-cursor]');
 const supportsProjectCursor = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-if (projectEntry && projectCursor && supportsProjectCursor) {
+if (projectEntries.length && projectCursor && supportsProjectCursor) {
   const placeCursor = (event) => {
     projectCursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0) translate(-50%, -50%)`;
   };
 
-  projectEntry.addEventListener('pointerenter', (event) => {
-    placeCursor(event);
-    projectCursor.classList.add('is-visible');
+  projectEntries.forEach((projectEntry) => {
+    projectEntry.addEventListener('pointerenter', (event) => {
+      placeCursor(event);
+      projectCursor.classList.add('is-visible');
+    });
+    projectEntry.addEventListener('pointermove', placeCursor);
+    projectEntry.addEventListener('pointerleave', () => projectCursor.classList.remove('is-visible'));
+    projectEntry.addEventListener('pointerdown', () => projectCursor.classList.add('is-pressed'));
+    projectEntry.addEventListener('pointerup', () => projectCursor.classList.remove('is-pressed'));
   });
-  projectEntry.addEventListener('pointermove', placeCursor);
-  projectEntry.addEventListener('pointerleave', () => projectCursor.classList.remove('is-visible'));
-  projectEntry.addEventListener('pointerdown', () => projectCursor.classList.add('is-pressed'));
-  projectEntry.addEventListener('pointerup', () => projectCursor.classList.remove('is-pressed'));
 }
 
 const year = document.querySelector('[data-year]');
