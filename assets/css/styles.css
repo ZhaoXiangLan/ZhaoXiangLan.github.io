@@ -1445,7 +1445,7 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
 .page-project-detail {
   min-height: 100svh;
   color: var(--cream);
-  background: var(--project-one-surface);
+  background: #002fa7;
 }
 .mini-pupper-detail {
   position: relative;
@@ -1456,26 +1456,25 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   gap: 2rem;
   overflow: hidden;
   padding: 7.5rem clamp(1.5rem, 5vw, 5rem) 3rem;
+  background: #002fa7;
 }
 .mini-pupper-detail::before {
-  content: "";
-  position: absolute;
-  right: -8vw;
-  bottom: -28vw;
-  width: 54vw;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: var(--red);
+  display: none;
 }
 .mini-pupper-detail-copy { position: relative; z-index: 2; }
 .mini-pupper-detail h1 {
   margin: 0;
+  color: transparent;
+  font-family: "Instrument Serif", var(--serif);
   font-size: clamp(5.2rem, 10vw, 10rem);
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: -.04em;
-  line-height: .72;
-  text-transform: uppercase;
+  line-height: .68;
+  text-shadow: .045em .045em 0 var(--red), .09em .09em 0 var(--lime);
+  -webkit-text-stroke: clamp(1px, .1vw, 1.5px) var(--cream);
 }
+.mini-pupper-detail h1 span,
+.movie-data-detail h1 span { display: block; }
 .mini-pupper-detail-copy p {
   margin: 2rem 0 .5rem;
   font: 700 clamp(.66rem, 1vw, .82rem) / 1.5 var(--mono);
@@ -1489,7 +1488,8 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   width: min(100%, 58rem);
   height: auto;
   filter: drop-shadow(0 2rem 2.5rem rgb(5 7 11 / 28%));
-  transform: rotate(-4deg);
+  --project-image-rotation: -4deg;
+  transform: rotate(var(--project-image-rotation));
 }
 .mini-pupper-back {
   position: absolute;
@@ -1503,7 +1503,7 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
 .mini-pupper-back span { margin-left: .4rem; font-size: 1rem; }
 
 .movie-data-page {
-  background: var(--project-two-surface);
+  background: #002fa7;
 }
 .movie-data-detail {
   position: relative;
@@ -1514,26 +1514,22 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   gap: 2rem;
   overflow: hidden;
   padding: 7.5rem clamp(1.5rem, 5vw, 5rem) 3rem;
+  background: #002fa7;
 }
 .movie-data-detail::before {
-  content: "";
-  position: absolute;
-  top: -18vw;
-  right: -12vw;
-  width: 48vw;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: var(--red);
-  opacity: .9;
+  display: none;
 }
 .movie-data-detail-copy { position: relative; z-index: 2; }
 .movie-data-detail h1 {
   margin: 0;
+  color: transparent;
+  font-family: "Instrument Serif", var(--serif);
   font-size: clamp(4.2rem, 8.5vw, 8.8rem);
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: -.055em;
-  line-height: .72;
-  text-transform: uppercase;
+  line-height: .68;
+  text-shadow: .045em .045em 0 var(--red), .09em .09em 0 var(--lime);
+  -webkit-text-stroke: clamp(1px, .1vw, 1.5px) var(--cream);
 }
 .movie-data-detail-copy p {
   margin: 2rem 0 .5rem;
@@ -1548,7 +1544,103 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   width: min(100%, 60rem);
   height: auto;
   filter: drop-shadow(0 2rem 2.5rem rgb(5 7 11 / 25%));
-  transform: rotate(2deg);
+  --project-image-rotation: 2deg;
+  transform: rotate(var(--project-image-rotation));
+}
+
+/* Project detail entrance — a Klein-blue curtain followed by layered content. */
+.project-intro {
+  position: fixed;
+  z-index: 300;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 1.15rem;
+  overflow: hidden;
+  color: var(--cream);
+  background: #002fa7;
+  pointer-events: none;
+  animation: project-curtain-exit .9s cubic-bezier(.76, 0, .24, 1) 1s forwards;
+}
+.project-intro::before,
+.project-intro::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgb(247 244 236 / 16%);
+}
+.project-intro::before { left: 10%; }
+.project-intro::after { right: 10%; }
+.project-intro-mark {
+  font: 500 clamp(.66rem, 1vw, .82rem) / 1 var(--mono);
+  letter-spacing: .22em;
+  text-align: center;
+  text-transform: uppercase;
+  animation: project-mark-in .72s cubic-bezier(.2, .8, .2, 1) both;
+}
+.project-intro-line {
+  display: block;
+  width: min(18rem, 62vw);
+  height: 4px;
+  background: linear-gradient(90deg, var(--red) 0 50%, var(--lime) 50% 100%);
+  transform-origin: center;
+  animation: project-line-in .75s cubic-bezier(.65, 0, .35, 1) .18s both;
+}
+.page-project-detail .site-header {
+  animation: project-header-in .7s cubic-bezier(.2, .8, .2, 1) 1.34s both;
+}
+.page-project-detail .mini-pupper-detail h1 span,
+.page-project-detail .movie-data-detail h1 span {
+  animation: project-title-in .85s cubic-bezier(.16, 1, .3, 1) 1.18s both;
+}
+.page-project-detail .mini-pupper-detail h1 span:nth-child(2),
+.page-project-detail .movie-data-detail h1 span:nth-child(2) { animation-delay: 1.28s; }
+.page-project-detail .mini-pupper-detail-copy p,
+.page-project-detail .movie-data-detail-copy p {
+  animation: project-meta-in .65s ease-out 1.52s both;
+}
+.page-project-detail .mini-pupper-detail-copy > span,
+.page-project-detail .movie-data-detail-copy > span {
+  display: inline-block;
+  animation: project-meta-in .65s ease-out 1.62s both;
+}
+.page-project-detail .mini-pupper-detail > img,
+.page-project-detail .movie-data-detail > img {
+  animation: project-image-in 1s cubic-bezier(.16, 1, .3, 1) 1.34s both;
+}
+.page-project-detail .mini-pupper-back {
+  animation: project-meta-in .65s ease-out 1.75s both;
+}
+
+@keyframes project-mark-in {
+  from { opacity: 0; letter-spacing: .42em; transform: translateY(1rem); }
+  to { opacity: 1; letter-spacing: .22em; transform: none; }
+}
+@keyframes project-line-in {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes project-curtain-exit {
+  0% { clip-path: inset(0 0 0 0); }
+  100% { visibility: hidden; clip-path: inset(0 0 100% 0); }
+}
+@keyframes project-header-in {
+  from { opacity: 0; transform: translateY(-1.25rem); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes project-title-in {
+  from { opacity: 0; transform: translateY(45%) skewY(4deg); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes project-meta-in {
+  from { opacity: 0; transform: translateY(1.1rem); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes project-image-in {
+  from { opacity: 0; transform: translateY(5rem) rotate(calc(var(--project-image-rotation) - 4deg)) scale(.9); }
+  to { opacity: 1; transform: rotate(var(--project-image-rotation)) scale(1); }
 }
 
 @media (max-width: 700px) {
@@ -1589,6 +1681,17 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   .scroll-marquee-track { animation: none; will-change: auto; }
   .scroll-marquee-group:first-child > span:not(:first-child),
   .scroll-marquee-group[aria-hidden="true"] { display: none; }
+  .project-intro { display: none; }
+  .page-project-detail .site-header,
+  .page-project-detail .mini-pupper-detail h1 span,
+  .page-project-detail .movie-data-detail h1 span,
+  .page-project-detail .mini-pupper-detail-copy p,
+  .page-project-detail .movie-data-detail-copy p,
+  .page-project-detail .mini-pupper-detail-copy > span,
+  .page-project-detail .movie-data-detail-copy > span,
+  .page-project-detail .mini-pupper-detail > img,
+  .page-project-detail .movie-data-detail > img,
+  .page-project-detail .mini-pupper-back { opacity: 1; transform: none; }
 }
 
 /* Standalone contact — same visual language as the home hero. */
