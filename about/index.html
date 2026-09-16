@@ -4,18 +4,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#05070b">
-    <meta name="description" content="About ZhaoXiang Lan.">
+    <meta name="description" content="A wall of interests belonging to ZhaoXiang Lan — photography, plants, aquariums, PC building, music, and travel.">
     <meta name="author" content="ZhaoXiang Lan">
     <link rel="canonical" href="https://zhaoxianglan.github.io/about/">
     <link rel="icon" href="../assets/images/favicon.svg?v=3" type="image/svg+xml">
     <script>document.documentElement.classList.add('js');</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/styles.css?v=20260915-5">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Manrope:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css?v=20260915-6">
+    <link rel="stylesheet" href="../assets/css/about.css?v=20260916-3">
     <title>About — ZhaoXiang Lan</title>
   </head>
-  <body class="page-blank">
+  <body class="page-about">
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header is-project" data-header>
@@ -37,11 +38,49 @@
       </div>
     </header>
 
-    <main id="main" class="blank-page-content" aria-label="About"></main>
+    <main id="main" class="about-track" data-about-track>
+      <section class="about-stage" data-about-stage aria-label="Interactive hobby wall">
+        <div class="about-wall-grid" aria-hidden="true"></div>
+
+        <div class="about-wall-title">
+          <h1><span class="line-one">I’m into a bit</span><span class="line-two">of everything.</span></h1>
+          <p>A personal wall of interests</p>
+        </div>
+
+        <div class="about-stickers">
+          <a class="hobby-sticker object-sticker nikon" href="#nikon-z30" aria-label="Open Nikon Z30 photography archive">
+            <span class="sticker-cut"><img src="../assets/images/about/nikon-z30-sticker.png" alt="" width="700" height="700"><span class="sticker-name"><strong>Nikon Z30</strong><em>Photography ↗</em></span></span>
+          </a>
+          <a class="hobby-sticker object-sticker dji" href="#dji-action-5-pro" aria-label="Open DJI Action 5 Pro archive">
+            <span class="sticker-cut"><img src="../assets/images/about/dji-action-5-pro-sticker.png" alt="" width="600" height="600"><span class="sticker-name"><strong>Action 5 Pro</strong><em>Video ↗</em></span></span>
+          </a>
+          <a class="hobby-sticker object-sticker racket" href="#badminton" aria-label="Open badminton archive">
+            <span class="sticker-cut"><img src="../assets/images/about/astrox-88d-pro-sticker.png" alt="" width="500" height="1000"><span class="sticker-name"><strong>88 D Pro</strong></span></span>
+          </a>
+          <a class="hobby-sticker object-sticker aquarium" href="#aquarium" aria-label="Open aquarium journal">
+            <span class="sticker-cut"><img src="../assets/images/about/aquarium-sticker.png" alt="" width="900" height="675"><span class="sticker-name"><strong>Aquarium</strong><em>Journal ↗</em></span></span>
+          </a>
+          <a class="hobby-sticker plant" href="#plants" aria-label="Open plant collection">
+            <span class="sticker-cut"><span class="sticker-mini-type">Photo soon</span><svg viewBox="0 0 90 120" aria-hidden="true"><path d="M45 105V45"/><path d="M44 62C21 61 15 48 17 34c18-1 29 7 28 27Z"/><path d="M46 47C48 24 62 17 76 20c-1 18-10 29-30 27Z"/><path d="M45 79C62 68 76 73 82 84c-13 11-26 11-37-5Z"/><path d="M26 105h39"/></svg><span class="sticker-name"><strong>Plants</strong><em>Coming soon</em></span></span>
+          </a>
+          <a class="hobby-sticker object-sticker billiards" href="#billiards" aria-label="Open billiards archive">
+            <span class="sticker-cut"><img src="../assets/images/about/billiards-sticker.png" alt="" width="650" height="650"><span class="sticker-name"><strong>Billiards</strong><em>Play ↗</em></span></span>
+          </a>
+          <a class="hobby-sticker pc" href="#pc-build" aria-label="Open PC build showcase">
+            <span class="sticker-cut"><svg viewBox="0 0 90 120" aria-hidden="true"><rect x="21" y="8" width="51" height="101" rx="6"/><circle cx="46.5" cy="39" r="17"/><circle cx="46.5" cy="39" r="6"/><path d="M33 70h27M33 81h27M33 92h18"/><circle cx="62" cy="18" r="2"/></svg><span class="sticker-name"><strong>PC Build</strong><em>Photo soon</em></span></span>
+          </a>
+        </div>
+
+        <span class="about-done">Every sticker opens a different story ↗</span>
+        <div class="about-scroll-cue">Scroll to roll each sticker onto the wall</div>
+        <div class="about-hint">Background locked · stickers interactive</div>
+        <div class="about-counter"><span>Stickers placed</span><i></i><b><span data-about-count>0</span> / <span data-about-total>7</span></b></div>
+      </section>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollSmoother.min.js" defer></script>
-    <script src="../assets/js/main.js?v=20260915-4" defer></script>
+    <script src="../assets/js/main.js?v=20260915-5" defer></script>
+    <script src="../assets/js/about.js?v=20260916-2" defer></script>
   </body>
 </html>
