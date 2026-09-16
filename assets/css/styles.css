@@ -5,6 +5,21 @@
   --lime: #cdeb55;
   --cream: #f7f4ec;
   --grey: #8e989f;
+  --home-hero-static-surface: linear-gradient(
+    180deg,
+    #002fa7 0 50%,
+    #012fa8 51%,
+    #0231aa 52%,
+    #0433ad 54%,
+    #0837b1 56%,
+    #103fb8 58%,
+    #1948bf 60%,
+    #2553c6 62%,
+    #345fcf 64%,
+    #466dd7 66%,
+    #5677dd 68%,
+    #617de1 70% 100%
+  );
   --home-surface:
     radial-gradient(circle at 8% 112%, rgb(243 61 86 / 90%) 0, rgb(243 61 86 / 42%) 16%, transparent 34%),
     radial-gradient(circle at 92% 116%, rgb(205 235 85 / 75%) 0, rgb(205 235 85 / 20%) 17%, transparent 34%),
@@ -1582,10 +1597,14 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   background: var(--black);
 }
 .page-contact .contact-v2 {
-  min-height: max(700px, 100svh);
+  min-height: max(760px, 108svh);
   overflow: hidden;
   color: var(--cream);
-  background: var(--home-surface);
+  background-color: #617de1;
+  background-image: var(--home-hero-static-surface);
+  background-position: top;
+  background-repeat: no-repeat;
+  background-size: 100% 100svh;
   box-shadow: none;
 }
 .page-contact .contact-v2::before,
@@ -1597,29 +1616,10 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   overflow: hidden;
 }
 .page-contact .contact-stage::before,
-.page-contact .contact-stage::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  pointer-events: none;
-}
-.page-contact .contact-stage::before {
-  background-image:
-    linear-gradient(rgb(255 255 255 / 3%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 3%) 1px, transparent 1px);
-  background-size: 60px 60px;
-  -webkit-mask-image: radial-gradient(circle at center, #000, transparent 82%);
-  mask-image: radial-gradient(circle at center, #000, transparent 82%);
-}
-.page-contact .contact-stage::after {
-  background:
-    linear-gradient(180deg, rgb(5 7 11 / 8%), transparent 28% 72%, rgb(61 91 221 / 18%)),
-    linear-gradient(90deg, rgb(5 7 11 / 16%), transparent 20% 80%, rgb(5 7 11 / 16%));
-}
+.page-contact .contact-stage::after { display: none; }
 .page-contact .contact-v2 .contact-content { z-index: 5; }
 .page-contact .contact-v2 h1 {
-  top: 39%;
+  top: 40.5%;
   padding: 0 clamp(1rem, 4vw, 4rem);
   color: transparent;
   font-family: "Instrument Serif", var(--serif);
@@ -1642,7 +1642,7 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   -webkit-text-stroke: inherit;
 }
 .page-contact .contact-info {
-  top: 61%;
+  top: 71%;
   grid-template-columns: minmax(0, 1.3fr) minmax(15rem, .7fr);
   gap: clamp(2.5rem, 7vw, 7rem);
   width: min(78rem, calc(100% - clamp(3rem, 12vw, 12rem)));
@@ -1682,17 +1682,17 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   .page-contact .site-header { justify-content: center; }
   .page-contact .header-identity,
   .page-contact .header-links { display: none; }
-  .page-contact .contact-v2 { min-height: max(700px, 100svh); }
+  .page-contact .contact-v2 { min-height: max(760px, 108svh); }
   .page-contact .contact-stage { height: max(700px, 100svh); min-height: 700px; }
   .page-contact .contact-v2 h1 {
-    top: 33%;
+    top: 35%;
     padding: 0 .7rem;
     font-size: clamp(4rem, 20vw, 5.7rem);
     line-height: .66;
   }
   .page-contact .contact-v2 h1 em { margin-left: 0; }
   .page-contact .contact-info {
-    top: 51%;
+    top: 62%;
     grid-template-columns: 1fr;
     gap: 1.45rem;
     width: calc(100% - 2rem);
@@ -1706,3 +1706,129 @@ body.contact-in-view .header-links a:hover { color: var(--black); }
   .page-contact .contact-actions { justify-content: center; margin-top: 1rem; }
   .page-contact .contact-copyright { bottom: 1rem; }
 }
+
+/* Home — one continuous gradient language from hero to final contact. */
+.page-home .work,
+.page-home .project-scene,
+.page-home .project-viewport,
+.page-home .contact:not(.contact-v2) {
+  color: var(--cream);
+  background: var(--home-surface);
+}
+.page-home .scene-one,
+.page-home .scene-two,
+.page-home .scene-three {
+  box-shadow: 0 -2rem 7rem 2rem rgb(5 7 11 / 24%);
+}
+.page-home .scene-one::before,
+.page-home .scene-two::before,
+.page-home .scene-three::before,
+.page-home .project-viewport::before,
+.page-home .contact:not(.contact-v2)::before { display: none; }
+.page-home .scene-one .project-viewport,
+.page-home .scene-two .project-viewport,
+.page-home .scene-three .project-viewport {
+  --title-stroke: var(--cream);
+  color: var(--cream);
+  background: var(--home-surface);
+}
+.page-home .project-viewport::after {
+  background:
+    linear-gradient(rgb(255 255 255 / 2.5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 2.5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(5 7 11 / 16%), transparent 20% 80%, rgb(5 7 11 / 16%));
+  background-size: 60px 60px, 60px 60px, auto;
+  -webkit-mask-image: radial-gradient(circle at center, #000, transparent 88%);
+  mask-image: radial-gradient(circle at center, #000, transparent 88%);
+}
+.page-home .scene-three .project-label { color: var(--cream); }
+.page-home .scene-three .project-status { color: var(--black); background: var(--lime); }
+.page-home .contact:not(.contact-v2) {
+  min-height: max(680px, 100svh);
+  overflow: hidden;
+  box-shadow: 0 -2rem 7rem 2rem rgb(5 7 11 / 24%);
+}
+.page-home .contact:not(.contact-v2) .contact-art { display: none; }
+.page-home .contact:not(.contact-v2) h2 {
+  color: transparent;
+  font-style: normal;
+  line-height: .68;
+  text-shadow: .045em .045em 0 var(--red), .09em .09em 0 var(--lime);
+  paint-order: stroke fill;
+  -webkit-text-stroke: clamp(1px, .1vw, 1.5px) var(--cream);
+}
+.page-home .contact:not(.contact-v2) h2 em {
+  margin-left: 12%;
+  color: transparent;
+  font: inherit;
+  font-size: 1em;
+  text-shadow: inherit;
+  -webkit-text-stroke: inherit;
+}
+.page-home .contact-footer { color: rgb(247 244 236 / 48%); }
+.page-home .contact-footer a:hover { color: var(--cream); }
+.page-home.contact-in-view .header-identity span,
+.page-home.contact-in-view .header-links { color: rgb(247 244 236 / 62%); }
+.page-home.contact-in-view .header-links a:hover { color: var(--cream); }
+
+@media (max-width: 600px) {
+  .page-home .contact:not(.contact-v2) h2 {
+    padding: 0 .75rem;
+    font-size: 19vw;
+    line-height: .66;
+  }
+  .page-home .contact:not(.contact-v2) h2 em { margin-left: 0; }
+}
+
+/* The home artwork moves; this single background plane does not. */
+.home-fixed-background {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  background: #002fa7;
+  pointer-events: none;
+}
+.home-light-field {
+  position: absolute;
+  top: 0;
+  right: -1.5rem;
+  left: -1.5rem;
+  display: block;
+  height: 155vh;
+  background: linear-gradient(
+    180deg,
+    transparent 0 32.26%,
+    rgb(14 58 190 / 4%) 32.9%,
+    rgb(18 64 196 / 10%) 33.55%,
+    rgb(24 70 201 / 18%) 34.84%,
+    rgb(30 77 204 / 28%) 36.13%,
+    rgb(39 87 209 / 40%) 37.42%,
+    rgb(48 96 213 / 52%) 38.71%,
+    rgb(58 103 216 / 64%) 40%,
+    rgb(68 110 219 / 76%) 41.29%,
+    rgb(80 118 222 / 87%) 42.58%,
+    rgb(90 123 224 / 95%) 43.87%,
+    #617de1 45.16% 100%
+  );
+  filter: blur(18px);
+  will-change: transform;
+}
+.page-home .hero,
+.page-home .work,
+.page-home .project-scene,
+.page-home .project-viewport,
+.page-home .scene-one .project-viewport,
+.page-home .scene-two .project-viewport,
+.page-home .scene-three .project-viewport,
+.page-home .contact:not(.contact-v2) {
+  background: transparent;
+}
+.page-home .hero::after {
+  background: none;
+}
+.page-home .scene-one,
+.page-home .scene-two,
+.page-home .scene-three,
+.page-home .contact:not(.contact-v2) { box-shadow: none; }
+.page-home .project-viewport::after { display: none; }
