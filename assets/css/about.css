@@ -18,24 +18,14 @@
   min-height: 700px;
   isolation: isolate;
   overflow: hidden;
-  background: var(--home-surface);
+  background: var(--home-hero-static-surface);
 }
-.about-stage::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: linear-gradient(90deg, rgb(5 7 11 / 16%), transparent 20% 80%, rgb(5 7 11 / 16%));
-  pointer-events: none;
-}
+.about-stage::after { display: none; }
 .about-wall-grid {
   position: absolute;
   z-index: -1;
   inset: 0;
-  background-image: linear-gradient(rgb(255 255 255 / 3%) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 3%) 1px, transparent 1px);
-  background-size: 60px 60px;
-  -webkit-mask-image: radial-gradient(circle at center, #000, transparent 82%);
-  mask-image: radial-gradient(circle at center, #000, transparent 82%);
+  display: none;
 }
 
 .about-wall-title {

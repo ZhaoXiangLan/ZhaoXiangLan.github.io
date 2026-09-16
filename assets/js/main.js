@@ -72,6 +72,7 @@ const initMotion = () => {
 
   const hero = document.querySelector('[data-hero]');
   const heroStage = document.querySelector('[data-hero-stage]');
+  const homeLightField = document.querySelector('[data-home-light-field]');
   const nameWords = gsap.utils.toArray('[data-name-word]');
   const taglineParts = gsap.utils.toArray('[data-tagline]');
   const scrollCue = document.querySelector('[data-scroll-cue]');
@@ -88,6 +89,22 @@ const initMotion = () => {
       .to(nameWords, { yPercent: 0, duration: 1.05, stagger: .12 }, .12)
       .to(taglineParts, { autoAlpha: 1, y: 0, duration: .62, stagger: .08, ease: 'back.out(1.3)' }, .72)
       .to(scrollCue, { autoAlpha: 1, y: 0, duration: .45, ease: 'power2.out' }, 1.02);
+
+    if (homeLightField) {
+      gsap.fromTo(homeLightField,
+        { y: '0vh' },
+        {
+          y: '-50vh',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: hero,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: .8
+          }
+        }
+      );
+    }
 
     gsap.timeline({
       scrollTrigger: {
