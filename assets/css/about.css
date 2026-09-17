@@ -10,7 +10,7 @@
   background: var(--about-ink);
 }
 
-.about-track { height: 500svh; }
+.about-track { height: 600svh; }
 .about-stage {
   position: relative;
   width: 100%;
@@ -235,17 +235,16 @@
 }
 
 .nikon { top: 13%; left: 4%; width: clamp(11rem, 17vw, 15rem); aspect-ratio: 1; --r: -7deg; --fill: var(--about-red); }
-.dji { top: 10%; left: 27%; width: clamp(7.2rem, 11vw, 9.8rem); aspect-ratio: 1; --r: 5deg; --fill: #65d8f5; }
+.dji { top: 42%; left: 5%; width: clamp(7.2rem, 10vw, 9rem); aspect-ratio: 1; --r: 5deg; --fill: #65d8f5; }
 .racket { top: 9%; right: 5%; width: clamp(5.2rem, 7.2vw, 6.8rem); aspect-ratio: 1 / 2; --r: 7deg; --fill: #65d8f5; }
 .racket .sticker-name { right: 8%; bottom: 2%; left: 8%; justify-content: center; padding-right: .35rem; padding-left: .35rem; transform: rotate(2deg); }
 .aquarium { right: 3%; bottom: 7%; width: clamp(14rem, 22vw, 20rem); aspect-ratio: 4 / 3; --r: -4deg; --fill: var(--about-lime); }
 .billiards { bottom: 6%; left: 27%; width: clamp(9rem, 13vw, 11.5rem); aspect-ratio: 1; --r: -5deg; --fill: var(--about-red); }
-.plant { right: 28%; bottom: 8%; width: clamp(7.2rem, 10vw, 9rem); aspect-ratio: 182 / 230; --r: 9deg; --fill: var(--about-lime); }
-.plant .sticker-cut { border-radius: 48% 52% 46% 54% / 57% 42% 58% 43%; }
-.plant .sticker-mini-type { top: 25px; right: 18px; transform: rotate(7deg); }
-.pc { bottom: 7%; left: 5%; width: clamp(8.5rem, 12vw, 10.8rem); aspect-ratio: 205 / 242; --r: 7deg; --fill: #d6daf8; }
-.pc .sticker-cut { border-radius: 22px 35px 18px 27px; }
-.pc .sticker-cut::before { content: "RGB / 04"; position: absolute; top: 17px; left: 18px; color: var(--about-red); font: 800 .625rem / 1 var(--about-mono); letter-spacing: .05em; }
+.plant { right: 25%; bottom: 8%; width: clamp(8.5rem, 12vw, 11rem); aspect-ratio: 1; --r: 8deg; --fill: var(--about-lime); }
+.pc { bottom: 5%; left: 4%; width: clamp(8.5rem, 12vw, 11rem); aspect-ratio: 683 / 808; --r: 7deg; --fill: #d6daf8; }
+.printer { top: 38%; right: 7%; width: clamp(6rem, 8vw, 7.5rem); aspect-ratio: 1052 / 1494; --r: -5deg; --fill: var(--about-red); }
+.snowboard { bottom: 8%; left: 40%; width: clamp(18rem, 30vw, 28rem); aspect-ratio: 2160 / 415; --r: -2deg; --fill: #d6daf8; }
+.snowboard .sticker-name { bottom: -4%; left: 8%; }
 
 .about-counter,
 .about-scroll-cue,
@@ -257,8 +256,35 @@
   letter-spacing: .08em;
   text-transform: uppercase;
 }
-.about-counter { right: 2.6rem; display: flex; align-items: center; gap: .75rem; }
-.about-counter i { width: 5.5rem; height: 1px; background: rgb(255 255 255 / 33%); }
+.about-counter {
+  top: 4.8rem;
+  right: auto;
+  bottom: auto;
+  left: 50%;
+  display: grid;
+  grid-template-columns: auto 6.5rem auto;
+  align-items: center;
+  gap: .75rem;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+.about-counter i {
+  position: relative;
+  width: 6.5rem;
+  height: .28rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(247 244 236 / 22%);
+}
+.about-counter i::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--about-lime);
+  transform: scaleX(var(--about-progress, 0));
+  transform-origin: left center;
+}
 .about-counter b { color: var(--about-lime); font-size: .75rem; }
 .about-scroll-cue { left: 2.6rem; opacity: .62; }
 .about-scroll-cue::before { content: ""; display: inline-block; width: 4rem; height: 1px; margin-right: .8rem; vertical-align: middle; background: currentColor; }
@@ -301,9 +327,12 @@
 @media (max-width: 900px) {
   .about-wall-title h1 { font-size: 12vw; }
   .nikon { left: 2%; }
+  .dji { top: 11%; left: 27%; }
   .racket { right: 2%; }
+  .printer { top: 9%; right: 17%; }
   .aquarium { right: 1%; }
   .pc { left: 2%; }
+  .snowboard { left: 38%; }
 }
 
 @media (max-width: 600px) {
@@ -320,16 +349,28 @@
   .nikon { top: 18%; left: 1rem; width: 6.6rem; }
   .dji { top: 20%; left: calc(50% - 2.4rem); width: 4.8rem; }
   .racket { top: 17%; right: 12vw; width: 3.5rem; }
-  .pc { bottom: 3%; left: 1rem; width: 5.7rem; }
+  .pc { bottom: 3%; left: .75rem; width: 5.2rem; }
   .billiards { bottom: 20%; left: 24%; width: 5.5rem; }
-  .plant { right: 24%; bottom: 20%; width: 4.6rem; }
+  .plant { right: 22%; bottom: 20%; width: 5rem; }
   .aquarium { right: 1rem; bottom: 3%; width: 8.8rem; }
-  .about-counter { right: 50%; bottom: .85rem; gap: .45rem; transform: translateX(50%); }
-  .about-counter > span,
-  .about-counter i { display: none; }
+  .printer { top: 16%; right: 23vw; width: 4.1rem; }
+  .snowboard { top: 50.5%; bottom: auto; left: 50%; width: 12rem; margin-left: -6rem; }
+  .snowboard .sticker-name { bottom: -12%; }
+  .about-counter {
+    top: 4.2rem;
+    right: auto;
+    bottom: auto;
+    left: 50%;
+    grid-template-columns: auto 3.25rem auto;
+    gap: .4rem;
+    font-size: .43rem;
+    transform: translateX(-50%);
+  }
+  .about-counter i { display: block; width: 3.25rem; height: .22rem; }
+  .about-counter b { font-size: .58rem; }
   .about-scroll-cue { left: .85rem; max-width: 58vw; line-height: 1.45; }
   .about-scroll-cue::before { width: 1.8rem; }
-  .about-hint { top: 54%; bottom: auto; font-size: .5rem; }
+  .about-hint { top: 56.5%; bottom: auto; font-size: .5rem; }
   .about-hint::before { margin-bottom: .35rem; font-size: 1rem; }
   .about-done { width: max-content; max-width: calc(100vw - 2rem); padding: .55rem .7rem; font-size: .46rem; transform: translate(-50%, 88px) rotate(-3deg); }
 }
@@ -339,9 +380,11 @@
   .nikon { left: 1rem; }
   .racket { right: 11vw; }
   .pc { left: .75rem; width: 5.4rem; }
+  .printer { right: 22vw; width: 3.8rem; }
   .billiards { left: 23%; width: 5.25rem; }
-  .plant { right: 23%; width: 4.4rem; }
+  .plant { right: 21%; width: 4.7rem; }
   .aquarium { right: .75rem; width: 8.4rem; }
+  .snowboard { width: 11rem; margin-left: -5.5rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -349,6 +392,6 @@
   .about-stage { position: relative; }
   .hobby-sticker { --reveal: 0% !important; --extras: 1 !important; opacity: 1 !important; transform: rotate(var(--r)) !important; }
   .about-hint::before { animation: none; }
-  .about-scroll-cue,
-  .about-counter { display: none; }
+  .about-scroll-cue { display: none; }
+  .about-counter i::after { transform: scaleX(1); }
 }
