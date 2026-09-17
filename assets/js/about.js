@@ -5,12 +5,17 @@
 
   const stickers = [...stage.querySelectorAll('.hobby-sticker')];
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const counter = stage.querySelector('[data-about-count]');
 
   stickers.forEach((sticker) => {
     sticker.addEventListener('click', (event) => event.preventDefault());
   });
 
-  if (reduceMotion || !window.gsap || !window.ScrollTrigger) return;
+  if (reduceMotion || !window.gsap || !window.ScrollTrigger) {
+    counter.textContent = stickers.length;
+    stage.style.setProperty('--about-progress', '1');
+    return;
+  }
 
   const { gsap } = window;
   gsap.registerPlugin(window.ScrollTrigger);
@@ -71,7 +76,6 @@
   gsap.from('.about-wall-title h1 span', { yPercent: 120, autoAlpha: 0, stagger: .1, duration: 1, ease: 'power4.out' });
   gsap.from('.about-wall-title p', { y: 20, autoAlpha: 0, duration: .6, delay: .7, ease: 'power3.out' });
 
-  const counter = stage.querySelector('[data-about-count]');
   const scrollCue = stage.querySelector('.about-scroll-cue');
   const timeline = gsap.timeline({
     scrollTrigger: {
@@ -84,6 +88,7 @@
       invalidateOnRefresh: true,
       onUpdate: ({ progress }) => {
         counter.textContent = Math.min(stickers.length, Math.floor(progress * (stickers.length + .3)));
+        stage.style.setProperty('--about-progress', progress.toFixed(4));
         scrollCue.style.opacity = progress < .05 ? .62 : Math.max(0, .5 - progress * 1.8);
       }
     }
@@ -123,8 +128,8 @@
     document.addEventListener('pointermove', (event) => {
       const x = event.clientX / window.innerWidth - .5;
       const y = event.clientY / window.innerHeight - .5;
-      gsap.to('.nikon, .racket, .billiards, .plant', { x: x * 8, y: y * 6, duration: .8, overwrite: 'auto' });
-      gsap.to('.dji, .aquarium, .pc', { x: x * -7, y: y * -5, duration: .9, overwrite: 'auto' });
+      gsap.to('.nikon, .racket, .billiards, .plant, .printer', { x: x * 8, y: y * 6, duration: .8, overwrite: 'auto' });
+      gsap.to('.dji, .aquarium, .pc, .snowboard', { x: x * -7, y: y * -5, duration: .9, overwrite: 'auto' });
     }, { passive: true });
   }
 
