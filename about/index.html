@@ -13,11 +13,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Manrope:wght@600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css?v=20260916-8">
-    <link rel="stylesheet" href="../assets/css/about.css?v=20260916-14">
+    <link rel="stylesheet" href="../assets/css/about.css?v=20260917-7">
     <title>About — ZhaoXiang Lan</title>
   </head>
   <body class="page-about">
     <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="about-fixed-background" aria-hidden="true">
+      <span class="about-light-field" data-about-light-field></span>
+    </div>
 
     <header class="site-header is-project" data-header>
       <a class="header-identity" href="../" aria-label="ZhaoXiang Lan, home">
@@ -38,8 +42,9 @@
       </div>
     </header>
 
-    <main id="main" class="about-track" data-about-track>
-      <section class="about-stage" data-about-stage aria-label="Interactive hobby wall">
+    <main id="main" class="about-page-main">
+      <div class="about-track" data-about-track>
+        <section class="about-stage" data-about-stage aria-label="Interactive hobby wall">
         <div class="about-wall-grid" aria-hidden="true"></div>
 
         <div class="about-wall-title">
@@ -81,12 +86,56 @@
         <div class="about-scroll-cue">Scroll to roll each sticker onto the wall</div>
         <div class="about-hint">Keep scrolling down</div>
         <div class="about-counter"><span>Stickers placed</span><i></i><b><span data-about-count>0</span> / <span data-about-total>9</span></b></div>
+        </section>
+      </div>
+
+      <section class="gallery-track" data-gallery-track aria-label="Photography gallery portal">
+        <div class="gallery-stage" data-gallery-stage>
+          <div class="gallery-portal" data-gallery-portal>
+            <button class="gallery-orb" type="button" data-gallery-open aria-expanded="false" aria-controls="gallery-immersive">
+              <canvas class="gallery-orb-canvas" data-gallery-orb-canvas aria-hidden="true"></canvas>
+              <span class="gallery-orb-surface" aria-hidden="true"></span>
+              <span class="visually-hidden">Open the immersive photo gallery</span>
+            </button>
+          </div>
+
+          <p class="gallery-scroll-label" aria-hidden="true">A sphere of collected moments</p>
+        </div>
       </section>
     </main>
+
+    <section class="gallery-immersive" id="gallery-immersive" data-gallery-overlay aria-hidden="true" aria-label="Immersive spherical photo gallery">
+      <div class="gallery-sky" aria-hidden="true"></div>
+      <div class="gallery-viewport" data-gallery-viewport tabindex="0" role="application" aria-label="Drag to look around the spherical photo gallery. Click the center sphere to exit.">
+        <canvas class="gallery-webgl-canvas" data-gallery-canvas aria-hidden="true"></canvas>
+      </div>
+
+      <div class="gallery-ui">
+        <p>Drag to look around</p>
+        <button class="visually-hidden" type="button" data-gallery-close>Exit gallery</button>
+      </div>
+
+      <div class="gallery-lightbox" data-gallery-lightbox role="dialog" aria-modal="true" aria-label="Selected photograph" aria-hidden="true">
+        <button class="gallery-lightbox-close" type="button" data-gallery-lightbox-close aria-label="Close photograph">×</button>
+        <figure>
+          <div class="gallery-lightbox-image-wrap">
+            <img data-gallery-lightbox-image alt="">
+            <span data-gallery-lightbox-placeholder aria-hidden="true"></span>
+          </div>
+          <figcaption>
+            <strong data-gallery-lightbox-title></strong>
+            <span data-gallery-lightbox-meta></span>
+            <p data-gallery-lightbox-description></p>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js" defer></script>
     <script src="../assets/js/main.js?v=20260915-5" defer></script>
-    <script src="../assets/js/about.js?v=20260916-4" defer></script>
+    <script src="../assets/js/gallery-data.js?v=20260917-1" defer></script>
+    <script src="../assets/js/about.js?v=20260917-7" defer></script>
+    <script type="module" src="../assets/js/about-webgl.js?v=20260917-11"></script>
   </body>
 </html>
