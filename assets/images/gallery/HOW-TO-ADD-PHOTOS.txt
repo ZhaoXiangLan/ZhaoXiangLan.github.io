@@ -1,0 +1,27 @@
+ABOUT 3D GALLERY — ADDING YOUR PHOTOS
+
+1. Copy your JPG, PNG, AVIF, or WebP files into this folder:
+   assets/images/gallery/
+
+2. Open:
+   assets/js/gallery-data.js
+
+3. For the item you want to replace, add the exact filename to `file`:
+   file: "philadelphia-after-rain.jpg"
+
+4. Edit the same item's information:
+   title: the name shown on the photo
+   category: Photography, Aquarium, Plants, etc.
+   year: the year shown beside the category
+   alt: a short visual description for accessibility
+   description: the sentence shown when the photo is opened
+
+RECOMMENDED IMAGE SIZE
+
+- Landscape: 1800 × 1350 px (4:3)
+- Portrait photos are supported and will be cropped on the sphere.
+- JPG/WebP quality around 80–88% keeps the page fast.
+- Use simple lowercase filenames without spaces, for example:
+  aquarium-closeup-01.webp
+
+If `file` is left empty, the site displays a designed placeholder card.
