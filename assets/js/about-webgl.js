@@ -7,11 +7,14 @@ const start = () => {
   const viewport = document.querySelector('[data-gallery-viewport]');
   const galleryCanvas = document.querySelector('[data-gallery-canvas]');
   const closeButton = document.querySelector('[data-gallery-close]');
+  const galleryUi = overlay?.querySelector('.gallery-ui');
+  const colorWash = document.querySelector('[data-gallery-color-wash]');
+  const orbCursor = document.querySelector('[data-orb-cursor]');
   const lightbox = document.querySelector('[data-gallery-lightbox]');
   const lightboxClose = document.querySelector('[data-gallery-lightbox-close]');
   const items = Array.isArray(window.ZL_GALLERY_ITEMS) ? window.ZL_GALLERY_ITEMS : [];
 
-  if (!orbButton || !orbCanvas || !overlay || !viewport || !galleryCanvas || !closeButton || !lightbox || !lightboxClose || !items.length) return;
+  if (!orbButton || !orbCanvas || !overlay || !viewport || !galleryCanvas || !closeButton || !galleryUi || !colorWash || !orbCursor || !lightbox || !lightboxClose || !items.length) return;
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const gsap = window.gsap || null;
@@ -24,15 +27,22 @@ const start = () => {
     lastX: 0,
     lastY: 0,
     targetYaw: -.15,
-    targetPitch: -.04,
+    targetPitch: 0,
     yaw: -.15,
-    pitch: -.04,
+    pitch: 0,
     velocityX: 0,
     velocityY: 0,
     hovered: null,
     coreHovered: false,
     selected: null,
-    orbVisible: true
+    orbVisible: true,
+    orbHovered: false,
+    transitioning: false,
+    transitionTimeline: null,
+    cursorX: -100,
+    cursorY: -100,
+    cursorTargetX: -100,
+    cursorTargetY: -100
   };
 
   let orbRenderer;
@@ -48,48 +58,98 @@ const start = () => {
 
   const orbScene = new THREE.Scene();
   const orbCamera = new THREE.PerspectiveCamera(33, 1, .1, 30);
-  orbCamera.position.set(0, 0, 4.25);
+  orbCamera.position.set(0, 0, 5.2);
   const noiseTexture = createNoiseTexture();
+  const orbRoot = new THREE.Group();
+  orbScene.add(orbRoot);
   const orb = createKleinSphere(1.18, noiseTexture);
-  orbScene.add(orb);
+  orbRoot.add(orb);
   addLights(orbScene, 1.15);
 
-  const orbWordBelt = createOrbWordBelt(orbRenderer);
-  orbScene.add(orbWordBelt);
+  const orbBeltRig = new THREE.Group();
+  orbBeltRig.rotation.set(-.06, 0, THREE.MathUtils.degToRad(-25));
+  orbRoot.add(orbBeltRig);
+  const orbWordBelt = createOrbWordBelt(orbRenderer, 'CLICK', 1.42, .36, 162, 5);
+  orbBeltRig.add(orbWordBelt);
+
+  const orbBeltLine = new THREE.Mesh(
+    new THREE.TorusGeometry(1.42, .008, 8, 160),
+    new THREE.MeshBasicMaterial({
+      color: 0xf7f4ec,
+      transparent: true,
+      opacity: .2,
+      depthWrite: false,
+      toneMapped: false
+    })
+  );
+  orbBeltLine.rotation.x = Math.PI / 2;
+  orbBeltLine.renderOrder = 1;
+  orbBeltRig.add(orbBeltLine);
 
   const orbHalo = new THREE.Mesh(
     new THREE.SphereGeometry(1.28, 48, 32),
     new THREE.MeshBasicMaterial({ color: 0x002fa7, transparent: true, opacity: .07, side: THREE.BackSide })
   );
-  orbScene.add(orbHalo);
+  orbRoot.add(orbHalo);
 
   const galleryScene = new THREE.Scene();
-  const galleryCamera = new THREE.PerspectiveCamera(96, 1, .1, 40);
+  const galleryCamera = new THREE.PerspectiveCamera(104, 1, .1, 40);
   galleryCamera.position.set(0, 0, 0);
   const photoRoot = new THREE.Group();
+  photoRoot.rotation.order = 'YXZ';
   galleryScene.add(photoRoot);
 
   const innerShell = new THREE.Mesh(
     new THREE.SphereGeometry(10.4, 48, 28),
-    new THREE.MeshBasicMaterial({ color: 0xdce5ff, transparent: true, opacity: .055, side: THREE.BackSide, depthWrite: false })
+    new THREE.MeshBasicMaterial({ color: 0xdce5ff, transparent: true, opacity: .025, side: THREE.BackSide, depthWrite: false })
   );
   galleryScene.add(innerShell);
 
-  const core = createKleinSphere(1.08, noiseTexture);
-  core.position.set(0, 0, -3.8);
-  galleryScene.add(core);
-  const coreWordBelt = createOrbWordBelt(galleryRenderer, 'EXIT THE GALLERY     ', 1.15, .31, 108);
-  coreWordBelt.position.copy(core.position);
-  galleryScene.add(coreWordBelt);
-  const coreHalo = new THREE.Mesh(
-    new THREE.SphereGeometry(1.2, 48, 32),
-    new THREE.MeshBasicMaterial({ color: 0x002fa7, transparent: true, opacity: .09, side: THREE.BackSide, depthWrite: false })
+  const coreRoot = new THREE.Group();
+  coreRoot.position.set(0, 0, -3.7);
+  galleryScene.add(coreRoot);
+  const core = createKleinSphere(.86, noiseTexture, {
+    color: 0x91a9ee,
+    sheenColor: 0xdbe5ff,
+    specularColor: 0xf2f6ff,
+    bumpScale: .018
+  });
+  coreRoot.add(core);
+  const coreBeltRig = new THREE.Group();
+  coreBeltRig.rotation.set(-.04, 0, THREE.MathUtils.degToRad(-25));
+  coreRoot.add(coreBeltRig);
+  const coreWordBelt = createOrbWordBelt(galleryRenderer, 'EXIT', 1.08, .3, 148, 5);
+  coreBeltRig.add(coreWordBelt);
+  const coreBeltLine = new THREE.Mesh(
+    new THREE.TorusGeometry(1.08, .007, 8, 144),
+    new THREE.MeshBasicMaterial({ color: 0xf7f4ec, transparent: true, opacity: .2, depthWrite: false, toneMapped: false })
   );
-  coreHalo.position.copy(core.position);
-  galleryScene.add(coreHalo);
+  coreBeltLine.rotation.x = Math.PI / 2;
+  coreBeltRig.add(coreBeltLine);
+  const coreHalo = new THREE.Mesh(
+    new THREE.SphereGeometry(.96, 48, 32),
+    new THREE.MeshBasicMaterial({ color: 0x9bb2f2, transparent: true, opacity: .09, side: THREE.BackSide, depthWrite: false })
+  );
+  coreRoot.add(coreHalo);
+
+  const fracture = createFractureSphere(1.18);
+  fracture.root.visible = false;
+  galleryScene.add(fracture.root);
   addLights(galleryScene, .92);
 
   const cardMeshes = buildPhotoSphere(items, photoRoot, galleryRenderer);
+  const photoMaterials = [];
+  const photoMaterialOpacities = [];
+  photoRoot.traverse((object) => {
+    if (!object.isMesh || !object.material) return;
+    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    materials.forEach((material) => {
+      material.transparent = true;
+      material.needsUpdate = true;
+      photoMaterials.push(material);
+      photoMaterialOpacities.push(material.opacity);
+    });
+  });
   viewport.dataset.webglReady = 'true';
   viewport.dataset.cardCount = String(cardMeshes.length);
   viewport.dataset.coreHovered = 'false';
@@ -110,11 +170,26 @@ const start = () => {
   orbObserver.observe(orbButton);
 
   orbButton.addEventListener('click', openGallery);
+  orbButton.addEventListener('pointerenter', () => {
+    state.orbHovered = true;
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) orbCursor.classList.add('is-visible');
+  });
+  orbButton.addEventListener('pointerleave', () => {
+    state.orbHovered = false;
+    orbCursor.classList.remove('is-visible');
+  });
+  orbButton.addEventListener('focus', () => { state.orbHovered = true; });
+  orbButton.addEventListener('blur', () => { state.orbHovered = false; });
   closeButton.addEventListener('click', closeGallery);
   lightboxClose.addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', (event) => {
     if (event.target === lightbox) closeLightbox();
   });
+
+  document.addEventListener('pointermove', (event) => {
+    state.cursorTargetX = event.clientX + 14;
+    state.cursorTargetY = event.clientY + 14;
+  }, { passive: true });
 
   viewport.addEventListener('pointerdown', (event) => {
     if (!state.open || state.lightboxOpen) return;
@@ -140,9 +215,9 @@ const start = () => {
     const dy = event.clientY - state.lastY;
     if (Math.abs(dx) + Math.abs(dy) > 3) state.moved = true;
     state.targetYaw += dx * .0044;
-    state.targetPitch = clamp(state.targetPitch + dy * .0032, -.68, .68);
+    state.targetPitch = 0;
     state.velocityX = dx * .00065;
-    state.velocityY = dy * .00048;
+    state.velocityY = 0;
     state.lastX = event.clientX;
     state.lastY = event.clientY;
   });
@@ -160,13 +235,13 @@ const start = () => {
     state.hovered = null;
     viewport.dataset.coreHovered = 'false';
     viewport.style.cursor = 'grab';
+    orbCursor.classList.remove('is-visible', 'is-exit');
   });
 
   viewport.addEventListener('wheel', (event) => {
     if (!state.open || state.lightboxOpen) return;
     event.preventDefault();
     state.targetYaw -= event.deltaY * .00075;
-    state.targetPitch = clamp(state.targetPitch + event.deltaX * .0004, -.68, .68);
     state.velocityX = -event.deltaY * .000022;
   }, { passive: false });
 
@@ -175,8 +250,6 @@ const start = () => {
     const step = .13;
     if (event.key === 'ArrowLeft') state.targetYaw -= step;
     else if (event.key === 'ArrowRight') state.targetYaw += step;
-    else if (event.key === 'ArrowUp') state.targetPitch = clamp(state.targetPitch - step, -.68, .68);
-    else if (event.key === 'ArrowDown') state.targetPitch = clamp(state.targetPitch + step, -.68, .68);
     else if (event.key === 'Enter' || event.key === ' ') openNearestCard();
     else return;
     event.preventDefault();
@@ -192,13 +265,24 @@ const start = () => {
   const render = (time) => {
     const delta = Math.min(.04, (time - previousTime) / 1000);
     previousTime = time;
+    state.cursorX = THREE.MathUtils.lerp(state.cursorX, state.cursorTargetX, .24);
+    state.cursorY = THREE.MathUtils.lerp(state.cursorY, state.cursorTargetY, .24);
+    orbCursor.style.transform = `translate3d(${state.cursorX}px, ${state.cursorY}px, 0) translate(-50%, -50%)`;
 
     if (state.orbVisible && !state.open) {
       if (!reduceMotion) {
-        orb.rotation.y += delta * .2;
-        orb.rotation.x = Math.sin(time * .00035) * .08;
-        orbWordBelt.rotation.y -= delta * .48;
+        const phase = time / 5200;
+        const breath = 1 + Math.sin(phase * Math.PI * 2) * .055;
+        const hoverScale = state.orbHovered ? 1.035 : 1;
+        const nextScale = THREE.MathUtils.lerp(orbBeltRig.scale.x, breath * hoverScale, .085);
+        orbBeltRig.scale.setScalar(nextScale);
+        orb.rotation.y += delta * .18;
+        orb.rotation.x = Math.sin(time * .00034) * .075;
+        orbWordBelt.rotation.y -= delta * .62;
+        orbBeltLine.rotation.z += delta * .035;
         orbHalo.rotation.y -= delta * .08;
+      } else {
+        orbBeltRig.scale.setScalar(1);
       }
       orbRenderer.render(orbScene, orbCamera);
     }
@@ -206,12 +290,20 @@ const start = () => {
     if (state.open) {
       if (!state.dragging && !state.lightboxOpen && !reduceMotion) {
         state.targetYaw += state.velocityX;
-        state.targetPitch = clamp(state.targetPitch + state.velocityY, -.68, .68);
+        state.targetPitch = 0;
         state.velocityX *= .94;
         state.velocityY *= .92;
       }
       state.yaw = THREE.MathUtils.lerp(state.yaw, state.targetYaw, reduceMotion ? 1 : .085);
-      state.pitch = THREE.MathUtils.lerp(state.pitch, state.targetPitch, reduceMotion ? 1 : .085);
+      state.pitch = THREE.MathUtils.lerp(state.pitch, 0, reduceMotion ? 1 : .085);
+      // Keep horizontal rotation numerically stable without introducing a
+      // visible boundary: yaw can continue in either direction forever.
+      if (Math.abs(state.yaw) > Math.PI * 64) {
+        const completedTurns = Math.trunc(state.yaw / (Math.PI * 2));
+        const wrappedTurns = completedTurns * Math.PI * 2;
+        state.yaw -= wrappedTurns;
+        state.targetYaw -= wrappedTurns;
+      }
       viewport.dataset.yaw = state.yaw.toFixed(4);
       viewport.dataset.pitch = state.pitch.toFixed(4);
       photoRoot.rotation.y = state.yaw;
@@ -221,11 +313,20 @@ const start = () => {
         core.rotation.x = Math.sin(time * .0004) * .08;
         coreWordBelt.rotation.y -= delta * .44;
       }
+      if (!reduceMotion) {
+        const coreBreath = 1 + Math.sin(time / 820) * .045;
+        const coreScale = THREE.MathUtils.lerp(coreBeltRig.scale.x, coreBreath, .075);
+        coreBeltRig.scale.setScalar(coreScale);
+        coreBeltLine.rotation.z -= delta * .025;
+      }
       viewport.dataset.coreBeltRotation = coreWordBelt.rotation.y.toFixed(4);
       coreHalo.rotation.y -= reduceMotion ? 0 : delta * .06;
+      fracture.material.uniforms.uTime.value = time * .001;
 
       cardMeshes.forEach((mesh) => {
-        const targetScale = mesh === state.hovered ? 1.035 : 1;
+        // The viewer is inside the sphere. A slightly smaller radius brings
+        // the hovered photograph toward the camera without flattening it.
+        const targetScale = mesh === state.hovered ? .982 : 1;
         const nextScale = THREE.MathUtils.lerp(mesh.scale.x, targetScale, .12);
         mesh.scale.setScalar(nextScale);
       });
@@ -246,17 +347,119 @@ const start = () => {
     return renderer;
   }
 
-  function createKleinSphere(radius, bumpTexture) {
+  function createKleinSphere(radius, bumpTexture, options = {}) {
     const material = new THREE.MeshPhysicalMaterial({
-      color: 0x002fa7,
-      roughness: .3,
-      metalness: .03,
-      clearcoat: .62,
-      clearcoatRoughness: .28,
+      color: options.color ?? 0x002fa7,
+      roughness: .22,
+      metalness: .045,
+      clearcoat: .88,
+      clearcoatRoughness: .15,
+      sheen: .42,
+      sheenColor: new THREE.Color(options.sheenColor ?? 0x547ce5),
+      sheenRoughness: .38,
+      specularIntensity: 1.08,
+      specularColor: new THREE.Color(options.specularColor ?? 0xb8caff),
       bumpMap: bumpTexture,
-      bumpScale: .035
+      bumpScale: options.bumpScale ?? .022,
+      transparent: true,
+      opacity: 1
     });
     return new THREE.Mesh(new THREE.SphereGeometry(radius, 64, 48), material);
+  }
+
+  function createFractureSphere(radius) {
+    const geometry = new THREE.SphereGeometry(radius, 24, 16).toNonIndexed();
+    const positions = geometry.getAttribute('position');
+    const centers = new Float32Array(positions.count * 3);
+    const directions = new Float32Array(positions.count * 3);
+    const axes = new Float32Array(positions.count * 3);
+    const randoms = new Float32Array(positions.count);
+    const a = new THREE.Vector3();
+    const b = new THREE.Vector3();
+    const c = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    const direction = new THREE.Vector3();
+    const axis = new THREE.Vector3();
+
+    for (let index = 0; index < positions.count; index += 3) {
+      a.fromBufferAttribute(positions, index);
+      b.fromBufferAttribute(positions, index + 1);
+      c.fromBufferAttribute(positions, index + 2);
+      center.copy(a).add(b).add(c).multiplyScalar(1 / 3);
+      const seed = Math.sin((index + 7) * 91.713) * 43758.5453;
+      const noise = seed - Math.floor(seed);
+      direction.copy(center).normalize();
+      direction.x += Math.sin(index * 2.17) * .26;
+      direction.y += Math.cos(index * 1.41) * .24;
+      direction.z += Math.sin(index * .73) * .18;
+      direction.normalize().multiplyScalar(2.9 + noise * 3.7);
+      axis.set(
+        Math.sin(index * .61 + .2),
+        Math.cos(index * .47 + .8),
+        Math.sin(index * .83 + 1.7)
+      ).normalize();
+      for (let vertex = 0; vertex < 3; vertex += 1) {
+        const offset = (index + vertex) * 3;
+        centers.set([center.x, center.y, center.z], offset);
+        directions.set([direction.x, direction.y, direction.z], offset);
+        axes.set([axis.x, axis.y, axis.z], offset);
+        randoms[index + vertex] = noise;
+      }
+    }
+    geometry.setAttribute('aCenter', new THREE.BufferAttribute(centers, 3));
+    geometry.setAttribute('aDirection', new THREE.BufferAttribute(directions, 3));
+    geometry.setAttribute('aAxis', new THREE.BufferAttribute(axes, 3));
+    geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
+
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        uExplode: { value: 0 },
+        uOpacity: { value: 1 },
+        uTime: { value: 0 }
+      },
+      vertexShader: `
+        attribute vec3 aCenter;
+        attribute vec3 aDirection;
+        attribute vec3 aAxis;
+        attribute float aRandom;
+        uniform float uExplode;
+        uniform float uTime;
+        varying vec3 vNormal;
+        varying float vLight;
+        vec3 rotateAroundAxis(vec3 value, vec3 axis, float angle) {
+          return value * cos(angle) + cross(axis, value) * sin(angle) + axis * dot(axis, value) * (1.0 - cos(angle));
+        }
+        void main() {
+          float delayed = smoothstep(aRandom * .16, .72 + aRandom * .22, uExplode);
+          float eased = delayed * delayed * (3.0 - 2.0 * delayed);
+          vec3 local = position - aCenter;
+          float angle = eased * (2.2 + aRandom * 4.4);
+          vec3 rotated = rotateAroundAxis(local, aAxis, angle);
+          vec3 displaced = aCenter + rotated + aDirection * eased;
+          displaced += normalize(aDirection) * sin(uTime * 2.0 + aRandom * 12.0) * .025 * eased;
+          vNormal = normalize(normalMatrix * rotateAroundAxis(normal, aAxis, angle));
+          vLight = .72 + .28 * max(dot(vNormal, normalize(vec3(-.4, .75, 1.0))), 0.0);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(displaced, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float uOpacity;
+        varying float vLight;
+        void main() {
+          vec3 base = vec3(0.0, .184, .655);
+          vec3 highlight = vec3(.34, .51, .91);
+          gl_FragColor = vec4(mix(base, highlight, vLight * .45) * vLight, uOpacity);
+        }
+      `,
+      transparent: true,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      toneMapped: false
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.frustumCulled = false;
+    mesh.renderOrder = 5;
+    return { root: mesh, material };
   }
 
   function createNoiseTexture() {
@@ -280,24 +483,34 @@ const start = () => {
     return texture;
   }
 
-  function createOrbWordBelt(renderer, phrase = 'CLICK TO UNFOLD     ', radius = 1.245, height = .34, fontSize = 112) {
+  function createOrbWordBelt(renderer, phrase = 'CLICK TO UNFOLD     ', radius = 1.245, height = .34, fontSize = 112, repeatCount = 0) {
     const canvas = document.createElement('canvas');
     canvas.width = 4096;
-    canvas.height = 192;
+    canvas.height = repeatCount ? 240 : 192;
     const context = canvas.getContext('2d');
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.textAlign = 'left';
+    context.textAlign = repeatCount ? 'center' : 'left';
     context.textBaseline = 'middle';
     context.font = `italic 400 ${fontSize}px "Instrument Serif", Georgia, serif`;
     context.fillStyle = '#f7f4ec';
-    context.shadowColor = 'rgba(0, 15, 70, .72)';
-    context.shadowBlur = 10;
-    context.strokeStyle = 'rgba(0, 20, 82, .42)';
-    context.lineWidth = 3;
-    const phraseWidth = context.measureText(phrase).width;
-    for (let x = -phraseWidth; x < canvas.width + phraseWidth; x += phraseWidth) {
-      context.strokeText(phrase, x, canvas.height / 2);
-      context.fillText(phrase, x, canvas.height / 2);
+    context.shadowColor = 'rgba(0, 12, 56, .36)';
+    context.shadowBlur = 3;
+    context.strokeStyle = 'rgba(0, 13, 62, .78)';
+    context.lineJoin = 'round';
+    context.lineWidth = repeatCount ? 5 : 3;
+    if (repeatCount) {
+      const cellWidth = canvas.width / repeatCount;
+      for (let index = 0; index < repeatCount; index += 1) {
+        const x = cellWidth * (index + .5);
+        context.strokeText(phrase, x, canvas.height / 2);
+        context.fillText(phrase, x, canvas.height / 2);
+      }
+    } else {
+      const phraseWidth = context.measureText(phrase).width;
+      for (let x = -phraseWidth; x < canvas.width + phraseWidth; x += phraseWidth) {
+        context.strokeText(phrase, x, canvas.height / 2);
+        context.fillText(phrase, x, canvas.height / 2);
+      }
     }
 
     const texture = new THREE.CanvasTexture(canvas);
@@ -324,108 +537,184 @@ const start = () => {
   }
 
   function addLights(scene, intensity) {
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x00205d, 2.1 * intensity));
-    const key = new THREE.DirectionalLight(0xffffff, 4.2 * intensity);
-    key.position.set(-3.5, 4.5, 5);
+    scene.add(new THREE.HemisphereLight(0xdde8ff, 0x00143f, 1.75 * intensity));
+    const key = new THREE.DirectionalLight(0xffffff, 4.7 * intensity);
+    key.position.set(-3.8, 4.8, 5.4);
     scene.add(key);
-    const rim = new THREE.PointLight(0x7ea0ff, 5.5 * intensity, 18);
-    rim.position.set(4, -1, 3);
+    const rim = new THREE.PointLight(0x7197ff, 6.2 * intensity, 18);
+    rim.position.set(4.2, -.6, 3.2);
     scene.add(rim);
+    const lowerBounce = new THREE.PointLight(0x002fa7, 3.4 * intensity, 12);
+    lowerBounce.position.set(-2.2, -3.4, 2.2);
+    scene.add(lowerBounce);
   }
 
   function buildPhotoSphere(galleryItems, root, renderer) {
-    // OpenPurpose-style layout: each photograph remains a flat plane, while
-    // its centre is projected onto an invisible spherical shell. The camera
-    // stays inside that shell, so the collection reads as a tidy 3D room
-    // rather than a single image wrapped around a curved surface.
+    // Framer University's Open Purpose recreation builds the globe from
+    // crossing 3D "arms", not stacked latitude bands. Nine X-axis arms and
+    // four Y-axis arms make the top, bottom and corners converge as a sphere.
     const radius = 8.6;
-    const rows = [
-      { latitude: THREE.MathUtils.degToRad(28), offset: 0 },
-      { latitude: 0, offset: THREE.MathUtils.degToRad(30) },
-      { latitude: THREE.MathUtils.degToRad(-28), offset: 0 }
-    ];
-    const columns = 6;
-    const longitudeStep = Math.PI * 2 / columns;
-    // Keep each image substantially smaller than its 60-degree cell. From
-    // the centre of the sphere this reveals a complete, evenly spaced mosaic
-    // instead of a few oversized planes filling the viewport.
-    const baseLongitudeCoverage = THREE.MathUtils.degToRad(32);
-    const baseLatitudeCoverage = THREE.MathUtils.degToRad(18);
-    const sizePattern = [
-      [1.02, .94], [.9, 1.06], [1.05, .9], [.94, 1.02], [1.07, .92], [.91, 1.04]
+    const globeRig = new THREE.Group();
+    globeRig.name = 'gallery-globe-rig';
+    root.add(globeRig);
+
+    const armSpecs = [
+      ...Array.from({ length: 9 }, (_, index) => ({
+        axis: 'x',
+        angle: index * 40,
+        phase: 17 + index * 11.3
+      })),
+      ...[0, 45, 90, 130].map((angle, index) => ({
+        axis: 'y',
+        angle,
+        phase: 31 + index * 17
+      }))
     ];
     const maxAnisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    const portraitItems = galleryItems.filter((item) => Number(item.aspect) < 1);
+    const landscapeItems = galleryItems.filter((item) => Number(item.aspect) >= 1);
+    const layoutItems = [];
+    while (portraitItems.length || landscapeItems.length) {
+      if (portraitItems.length) layoutItems.push(portraitItems.shift());
+      if (landscapeItems.length) layoutItems.push(landscapeItems.shift());
+    }
     const meshes = [];
-    let itemIndex = 0;
+    const candidates = [];
+    const armGroups = armSpecs.map((spec, armIndex) => {
+      const arm = new THREE.Group();
+      arm.name = `gallery-arm-${spec.axis}-${armIndex}`;
+      if (spec.axis === 'x') arm.rotation.x = THREE.MathUtils.degToRad(spec.angle);
+      else arm.rotation.y = THREE.MathUtils.degToRad(spec.angle);
+      globeRig.add(arm);
 
-    rows.forEach(({ latitude, offset }, rowIndex) => {
-      const ringRadius = radius * Math.cos(latitude);
-      for (let column = 0; column < columns; column += 1) {
-        const item = galleryItems[itemIndex];
-        if (!item) break;
-        const longitudeCenter = -Math.PI + offset + column * longitudeStep;
-        const [widthScale, heightScale] = sizePattern[(column + rowIndex * 2) % sizePattern.length];
-        const cardLongitudeLength = baseLongitudeCoverage * widthScale;
-        const cardLatitudeLength = baseLatitudeCoverage * heightScale;
-
-        // Translate a controlled angular footprint into a flat tangent plane.
-        // Every row closes around 360 degrees, while the unused angle becomes
-        // a consistent visible gap instead of overlapping neighbouring cards.
-        const cardWidth = 2 * ringRadius * Math.tan(cardLongitudeLength / 2);
-        const cardHeight = 2 * radius * Math.tan(cardLatitudeLength / 2);
-        const texture = createCardTexture(item, itemIndex, maxAnisotropy, cardWidth / cardHeight);
-        const card = new THREE.Mesh(
-          new THREE.PlaneGeometry(cardWidth, cardHeight, 1, 1),
-          new THREE.MeshBasicMaterial({ map: texture, side: THREE.FrontSide, toneMapped: false })
-        );
-        card.position.set(
-          radius * Math.sin(longitudeCenter) * Math.cos(latitude),
-          radius * Math.sin(latitude),
-          -radius * Math.cos(longitudeCenter) * Math.cos(latitude)
-        );
-        card.lookAt(0, 0, 0);
-        card.userData.item = item;
-        card.userData.index = itemIndex;
-        card.renderOrder = 3;
-
-        const frame = new THREE.Mesh(
-          new THREE.PlaneGeometry(cardWidth + .1, cardHeight + .1, 1, 1),
-          new THREE.MeshBasicMaterial({ color: 0xf7f4ec, toneMapped: false })
-        );
-        frame.position.z = -.025;
-        frame.renderOrder = 2;
-        card.add(frame);
-
-        root.add(card);
-        meshes.push(card);
-        itemIndex += 1;
+      // Twelve candidate positions per arm give the spacing pass enough room
+      // to distribute the photographs without reconnecting them into bands.
+      for (let slotIndex = 0; slotIndex < 12; slotIndex += 1) {
+        const jitter = (seededUnit(armIndex * 97 + slotIndex * 41 + 13) - .5) * 3;
+        const orbitAngle = THREE.MathUtils.degToRad(spec.phase + slotIndex * 30 + jitter);
+        const localPosition = spec.axis === 'x'
+          ? new THREE.Vector3(Math.sin(orbitAngle) * radius, 0, -Math.cos(orbitAngle) * radius)
+          : new THREE.Vector3(0, Math.sin(orbitAngle) * radius, -Math.cos(orbitAngle) * radius);
+        const worldPosition = localPosition.clone().applyEuler(arm.rotation);
+        candidates.push({ arm, armIndex, slotIndex, localPosition, worldPosition });
       }
+      return arm;
     });
 
-    const mosaicBacking = new THREE.Mesh(
-      new THREE.SphereGeometry(radius + .65, 72, 42),
+    // Remove near-duplicate intersections where crossing arms meet. The
+    // remaining slots stay irregular and read as one globe rather than rows.
+    // The reference leaves a clear pocket of air around every frame. A
+    // generous angular gap also accounts for wide landscape photographs, so
+    // intersecting arms never create visible card-on-card collisions.
+    const minSeparation = THREE.MathUtils.degToRad(7.5);
+    const slots = [];
+    candidates.forEach((candidate) => {
+      const direction = candidate.worldPosition.clone().normalize();
+      const overlaps = slots.some((slot) => (
+        Math.acos(clamp(direction.dot(slot.direction), -1, 1)) < minSeparation
+      ));
+      if (!overlaps) slots.push({ ...candidate, direction });
+    });
+
+    // Farthest-point placement creates the airy, evenly scattered inner-globe
+    // layout from the reference while keeping every photograph independent.
+    const forward = new THREE.Vector3(0, 0, -1);
+    const availableSlots = [...slots];
+    const photoSlots = [];
+    while (photoSlots.length < layoutItems.length && availableSlots.length) {
+      let bestIndex = 0;
+      let bestScore = -Infinity;
+      availableSlots.forEach((slot, index) => {
+        const nearest = photoSlots.length
+          ? Math.min(...photoSlots.map((placed) => (
+            Math.acos(clamp(slot.direction.dot(placed.direction), -1, 1))
+          )))
+          : Math.PI;
+        const forwardBias = slot.direction.dot(forward) * (photoSlots.length ? .035 : .22);
+        const score = nearest + forwardBias;
+        if (score > bestScore) {
+          bestScore = score;
+          bestIndex = index;
+        }
+      });
+      photoSlots.push(availableSlots.splice(bestIndex, 1)[0]);
+    }
+    photoSlots.forEach((slot, index) => {
+      const item = layoutItems[index];
+      slot.item = item;
+      slot.itemIndex = galleryItems.indexOf(slot.item);
+    });
+
+    photoSlots.forEach((slot, slotIndex) => {
+      const aspect = clamp(Number(slot.item.aspect) || 4 / 3, .54, 1.72);
+      const height = 2.04 + seededUnit(slotIndex * 67 + 19) * .56;
+      const width = height * aspect;
+      const geometry = new THREE.PlaneGeometry(width, height, 1, 1);
+      const texture = createCardTexture(slot.item, slot.itemIndex, maxAnisotropy, aspect);
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        side: THREE.DoubleSide,
+        toneMapped: false
+      });
+
+      const panel = new THREE.Mesh(geometry, material);
+      panel.position.copy(slot.localPosition);
+      // Keep every photograph's top edge legible while its face points back
+      // toward the camera at the globe centre. Compensating for the arm's
+      // quaternion prevents upper-arm cards from flipping upside down.
+      const inward = slot.worldPosition.clone().normalize().negate();
+      const upHint = Math.abs(inward.y) > .94
+        ? new THREE.Vector3(0, 0, 1)
+        : new THREE.Vector3(0, 1, 0);
+      const right = upHint.clone().cross(inward).normalize();
+      const stableUp = inward.clone().cross(right).normalize();
+      const worldBasis = new THREE.Matrix4().makeBasis(right, stableUp, inward);
+      const worldQuaternion = new THREE.Quaternion().setFromRotationMatrix(worldBasis);
+      const inverseArmQuaternion = slot.arm.quaternion.clone().invert();
+      panel.quaternion.copy(inverseArmQuaternion.multiply(worldQuaternion));
+      panel.renderOrder = 3;
+      panel.userData.placeholder = false;
+      panel.userData.armAxis = armSpecs[slot.armIndex].axis;
+      panel.userData.armAngle = armSpecs[slot.armIndex].angle;
+      panel.userData.item = slot.item;
+      panel.userData.index = slot.itemIndex;
+      meshes.push(panel);
+      slot.arm.add(panel);
+    });
+
+    // A quiet inner shell closes the gaps without reconnecting the cards into
+    // horizontal bands. It sits behind every tangent plane.
+    const outerSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(radius + .7, 96, 64),
       new THREE.MeshBasicMaterial({
-        color: 0xd8e2ff,
-        transparent: true,
-        opacity: .2,
+        color: 0x1748bd,
+        transparent: false,
+        opacity: 1,
         side: THREE.BackSide,
-        depthWrite: false,
+        depthWrite: true,
         toneMapped: false
       })
     );
-    mosaicBacking.renderOrder = 1;
-    root.add(mosaicBacking);
+    outerSphere.renderOrder = 1;
+    outerSphere.userData.isOuterGallerySphere = true;
+    globeRig.add(outerSphere);
+    globeRig.userData.armCount = armGroups.length;
     return meshes;
+  }
+
+  function seededUnit(seed) {
+    const value = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+    return value - Math.floor(value);
   }
 
   function createCardTexture(item, index, anisotropy, aspect = 4 / 3) {
     const canvas = document.createElement('canvas');
     if (aspect >= 1) {
-      canvas.width = 1024;
-      canvas.height = Math.max(480, Math.round(1024 / aspect));
+      canvas.width = 768;
+      canvas.height = Math.max(360, Math.round(768 / aspect));
     } else {
-      canvas.height = 1024;
-      canvas.width = Math.max(480, Math.round(1024 * aspect));
+      canvas.height = 768;
+      canvas.width = Math.max(360, Math.round(768 * aspect));
     }
     const context = canvas.getContext('2d');
     paintCard(context, canvas, item, index, null);
@@ -433,7 +722,7 @@ const start = () => {
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = anisotropy;
 
-    if (item.file) {
+    if (item.preview || item.file) {
       const image = new Image();
       image.decoding = 'async';
       image.onload = () => {
@@ -444,7 +733,7 @@ const start = () => {
         paintCard(context, canvas, item, index, null);
         texture.needsUpdate = true;
       };
-      image.src = `../assets/images/gallery/${item.file}`;
+      image.src = `../assets/images/gallery/${item.preview || item.file}`;
     }
     return texture;
   }
@@ -452,17 +741,13 @@ const start = () => {
   function paintCard(context, canvas, item, index, image) {
     const { width, height } = canvas;
     context.clearRect(0, 0, width, height);
+    context.fillStyle = '#07143b';
+    context.fillRect(0, 0, width, height);
     if (image) {
-      const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+      const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight);
       const drawWidth = image.naturalWidth * scale;
       const drawHeight = image.naturalHeight * scale;
       context.drawImage(image, (width - drawWidth) / 2, (height - drawHeight) / 2, drawWidth, drawHeight);
-      const shade = context.createLinearGradient(0, 0, 0, height);
-      shade.addColorStop(0, 'rgba(0, 20, 70, 0.04)');
-      shade.addColorStop(.72, 'rgba(0, 20, 70, 0.08)');
-      shade.addColorStop(1, 'rgba(0, 20, 70, 0.52)');
-      context.fillStyle = shade;
-      context.fillRect(0, 0, width, height);
     } else {
       const gradient = context.createLinearGradient(0, 0, width, height);
       gradient.addColorStop(0, '#002fa7');
@@ -481,24 +766,12 @@ const start = () => {
       context.letterSpacing = '2px';
       context.fillText(String(index + 1).padStart(2, '0'), 34, 48);
       context.font = '400 52px Georgia, serif';
-      context.fillText(item.category || 'Gallery', 34, height - 92);
+      context.fillText('PHOTO', 34, height - 30);
     }
-
-    context.fillStyle = 'rgba(247,244,236,.94)';
-    context.fillRect(22, height - 68, width - 44, 45);
-    context.fillStyle = '#05070b';
-    context.font = '700 18px monospace';
-    context.textBaseline = 'middle';
-    context.fillText((item.title || '').toUpperCase().slice(0, 34), 38, height - 45);
-    context.textAlign = 'right';
-    context.fillStyle = 'rgba(5,7,11,.58)';
-    context.fillText(item.year || '', width - 38, height - 45);
-    context.textAlign = 'left';
-    context.textBaseline = 'alphabetic';
   }
 
   function resizeOrb() {
-    const rect = orbButton.getBoundingClientRect();
+    const rect = orbCanvas.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     orbRenderer.setSize(rect.width, rect.height, false);
     orbCamera.aspect = rect.width / rect.height;
@@ -510,71 +783,130 @@ const start = () => {
     if (!rect.width || !rect.height) return;
     galleryRenderer.setSize(rect.width, rect.height, false);
     galleryCamera.aspect = rect.width / rect.height;
-    galleryCamera.fov = rect.width < 650 ? 102 : 96;
+    galleryCamera.fov = rect.width < 650 ? 98 : 100;
     galleryCamera.updateProjectionMatrix();
   }
 
+  function matchFractureToOrb() {
+    const viewportRect = viewport.getBoundingClientRect();
+    const orbRect = orbButton.getBoundingClientRect();
+    const depth = 3.2;
+    const worldHeight = 2 * depth * Math.tan(THREE.MathUtils.degToRad(galleryCamera.fov * .5));
+    const worldWidth = worldHeight * galleryCamera.aspect;
+    const centerX = orbRect.left + orbRect.width * .5;
+    const centerY = orbRect.top + orbRect.height * .5;
+    const normalizedX = ((centerX - viewportRect.left) / viewportRect.width) * 2 - 1;
+    const normalizedY = -(((centerY - viewportRect.top) / viewportRect.height) * 2 - 1);
+    fracture.root.position.set(normalizedX * worldWidth * .5, normalizedY * worldHeight * .5, -depth);
+    const targetDiameter = Math.max(orbRect.width, orbRect.height) / viewportRect.height * worldHeight;
+    fracture.root.scale.setScalar(targetDiameter / 2.36);
+    colorWash.style.setProperty('--wash-x', `${((centerX - viewportRect.left) / viewportRect.width) * 100}%`);
+    colorWash.style.setProperty('--wash-y', `${((centerY - viewportRect.top) / viewportRect.height) * 100}%`);
+  }
+
   function openGallery() {
-    if (state.open) return;
+    if (state.open && !state.transitioning) return;
     state.open = true;
+    state.transitioning = true;
     orbButton.setAttribute('aria-expanded', 'true');
     overlay.setAttribute('aria-hidden', 'false');
     overlay.classList.add('is-open');
     document.body.classList.add('gallery-is-open');
+    orbCursor.classList.remove('is-visible', 'is-exit');
     resizeGallery();
-    viewport.focus({ preventScroll: true });
+    matchFractureToOrb();
 
     if (gsap && !reduceMotion) {
-      gsap.killTweensOf([overlay, orbButton, photoRoot.scale, core.scale, coreWordBelt.scale]);
-      gsap.set(overlay, { autoAlpha: 0 });
-      gsap.set(photoRoot.scale, { x: .18, y: .18, z: .18 });
-      gsap.set(core.scale, { x: 1.8, y: 1.8, z: 1.8 });
-      gsap.set(coreWordBelt.scale, { x: 1.8, y: 1.8, z: 1.8 });
-      galleryCamera.fov = 138;
-      galleryCamera.updateProjectionMatrix();
-      gsap.timeline()
-        .to(orbButton, { scale: 4.6, autoAlpha: 0, filter: 'blur(14px)', duration: .72, ease: 'power3.in' }, 0)
-        .to(overlay, { autoAlpha: 1, duration: .42, ease: 'power2.out' }, .18)
-        .to(photoRoot.scale, { x: 1, y: 1, z: 1, duration: .95, ease: 'power3.out' }, .25)
-        .to(core.scale, { x: 1, y: 1, z: 1, duration: .75, ease: 'back.out(1.35)' }, .34)
-        .to(coreWordBelt.scale, { x: 1, y: 1, z: 1, duration: .75, ease: 'back.out(1.35)' }, .34)
-        .to(galleryCamera, {
-          fov: window.innerWidth < 650 ? 102 : 96,
-          duration: .85,
-          ease: 'power2.out',
-          onUpdate: () => galleryCamera.updateProjectionMatrix()
-        }, .24);
+      if (state.transitionTimeline) state.transitionTimeline.kill();
+      fracture.root.visible = true;
+      fracture.material.uniforms.uExplode.value = 0;
+      fracture.material.uniforms.uOpacity.value = 1;
+      gsap.set(overlay, { autoAlpha: 1 });
+      gsap.set(colorWash, { xPercent: -50, yPercent: -50, scale: 0 });
+      gsap.set(photoRoot.scale, { x: .52, y: .52, z: .52 });
+      gsap.set(photoMaterials, { opacity: 0 });
+      gsap.set(galleryUi, { autoAlpha: 0 });
+      gsap.set(coreRoot.scale, { x: .28, y: .28, z: .28 });
+      gsap.set(core.material, { opacity: 0, roughness: .72 });
+      gsap.set(coreWordBelt.material, { opacity: 0 });
+      gsap.set(coreBeltLine.material, { opacity: 0 });
+      gsap.set(coreHalo.material, { opacity: 0 });
+      state.transitionTimeline = gsap.timeline({
+        paused: true,
+        defaults: { overwrite: 'auto' },
+        onComplete: () => {
+          state.transitioning = false;
+          fracture.root.visible = false;
+          viewport.focus({ preventScroll: true });
+        },
+        onReverseComplete: finalizeClose
+      });
+      state.transitionTimeline
+        .to(orbButton, { autoAlpha: 0, duration: .24, ease: 'power1.inOut' }, 0)
+        .to(fracture.material.uniforms.uExplode, { value: 1, duration: 1.5, ease: 'power2.inOut' }, .08)
+        .to(colorWash, { scale: 24, duration: 1.45, ease: 'power2.inOut' }, .16)
+        .to(photoRoot.scale, { x: 1, y: 1, z: 1, duration: 1.35, ease: 'power2.out' }, .55)
+        .to(photoMaterials, { opacity: (index) => photoMaterialOpacities[index], duration: 1.15, ease: 'sine.inOut' }, .58)
+        .to(galleryUi, { autoAlpha: 1, duration: .7, ease: 'sine.out' }, 1.15)
+        .to(coreRoot.scale, { x: 1, y: 1, z: 1, duration: 1.15, ease: 'power2.out' }, .85)
+        .to(core.material, { opacity: 1, roughness: .22, duration: .95, ease: 'sine.out' }, .9)
+        .to(coreWordBelt.material, { opacity: .96, duration: .75, ease: 'sine.out' }, 1.1)
+        .to(coreBeltLine.material, { opacity: .2, duration: .68, ease: 'sine.out' }, 1.12)
+        .to(coreHalo.material, { opacity: .09, duration: .68, ease: 'sine.out' }, 1.12)
+        .to(fracture.material.uniforms.uOpacity, { value: 0, duration: .55, ease: 'sine.out' }, 1.3)
+        .play(0);
     } else {
       photoRoot.scale.setScalar(1);
-      core.scale.setScalar(1);
-      coreWordBelt.scale.setScalar(1);
+      photoMaterials.forEach((material, index) => { material.opacity = photoMaterialOpacities[index]; });
+      galleryUi.style.opacity = '1';
+      galleryUi.style.visibility = 'visible';
+      coreRoot.scale.setScalar(1);
+      core.material.opacity = 1;
+      coreWordBelt.material.opacity = .96;
+      coreBeltLine.material.opacity = .2;
+      coreHalo.material.opacity = .09;
+      fracture.root.visible = false;
+      colorWash.style.transform = 'translate(-50%, -50%) scale(24)';
+      state.transitioning = false;
+      viewport.focus({ preventScroll: true });
     }
   }
 
   function closeGallery() {
     if (!state.open) return;
     if (state.lightboxOpen) closeLightbox();
-    state.open = false;
     state.dragging = false;
     state.hovered = null;
     state.coreHovered = false;
     viewport.classList.remove('is-dragging');
     viewport.style.cursor = '';
+    orbCursor.classList.remove('is-visible', 'is-exit');
+
+    if (gsap && !reduceMotion && state.transitionTimeline) {
+      state.transitioning = true;
+      fracture.root.visible = true;
+      fracture.material.uniforms.uOpacity.value = 0;
+      matchFractureToOrb();
+      state.transitionTimeline.reverse();
+    } else {
+      finalizeClose();
+    }
+  }
+
+  function finalizeClose() {
+    state.open = false;
+    state.transitioning = false;
+    fracture.root.visible = false;
+    overlay.classList.remove('is-open');
+    overlay.setAttribute('aria-hidden', 'true');
     orbButton.setAttribute('aria-expanded', 'false');
     document.body.classList.remove('gallery-is-open');
-
-    const complete = () => {
-      overlay.classList.remove('is-open');
-      overlay.setAttribute('aria-hidden', 'true');
-      orbButton.focus({ preventScroll: true });
-      if (gsap) gsap.set(orbButton, { clearProps: 'transform,opacity,visibility,filter' });
-    };
-
-    if (gsap && !reduceMotion) {
-      gsap.to(overlay, { autoAlpha: 0, duration: .42, ease: 'power2.inOut', onComplete: complete });
-    } else {
-      complete();
+    if (gsap) {
+      gsap.set(overlay, { autoAlpha: 0 });
+      gsap.set(orbButton, { clearProps: 'transform,opacity,visibility,filter' });
     }
+    else colorWash.style.transform = '';
+    orbButton.focus({ preventScroll: true });
   }
 
   function finishDrag() {
@@ -591,13 +923,16 @@ const start = () => {
   }
 
   function updateHover() {
-    if (!state.open || state.lightboxOpen || state.dragging) return;
+    if (!state.open || state.lightboxOpen || state.dragging || state.transitioning) return;
     raycaster.setFromCamera(pointer, galleryCamera);
     const hit = raycaster.intersectObjects([core, ...cardMeshes], false)[0]?.object || null;
     state.coreHovered = hit === core;
     state.hovered = state.coreHovered ? null : hit;
     viewport.dataset.coreHovered = String(state.coreHovered);
     viewport.style.cursor = hit ? 'pointer' : 'grab';
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    orbCursor.classList.toggle('is-visible', finePointer && state.coreHovered);
+    orbCursor.classList.toggle('is-exit', state.coreHovered);
   }
 
   function selectAtPointer() {
@@ -627,16 +962,16 @@ const start = () => {
     state.selected = mesh;
     const image = lightbox.querySelector('[data-gallery-lightbox-image]');
     const placeholder = lightbox.querySelector('[data-gallery-lightbox-placeholder]');
-    lightbox.querySelector('[data-gallery-lightbox-title]').textContent = item.title || '';
-    lightbox.querySelector('[data-gallery-lightbox-meta]').textContent = [item.category, item.year].filter(Boolean).join(' · ');
-    lightbox.querySelector('[data-gallery-lightbox-description]').textContent = item.description || '';
+    lightbox.querySelector('[data-gallery-lightbox-title]').textContent = item.date || '';
+    lightbox.querySelector('[data-gallery-lightbox-meta]').textContent = item.location || '';
+    lightbox.querySelector('[data-gallery-lightbox-description]').textContent = '';
     placeholder.style.background = `radial-gradient(circle at 65% 30%, ${item.accent || '#cdeb55'}, transparent 17%), linear-gradient(135deg, #002fa7, #5d7cdf 72%, #8fa4ec)`;
 
     if (item.file) {
       image.hidden = false;
       placeholder.hidden = true;
       image.src = `../assets/images/gallery/${item.file}`;
-      image.alt = item.alt || item.title || '';
+      image.alt = [item.date, item.location].filter(Boolean).join(', ') || 'Gallery photograph';
       image.onerror = () => {
         image.hidden = true;
         placeholder.hidden = false;
