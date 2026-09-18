@@ -62,7 +62,7 @@ const start = () => {
   const noiseTexture = createNoiseTexture();
   const orbRoot = new THREE.Group();
   orbScene.add(orbRoot);
-  const orb = createKleinSphere(1.18, noiseTexture);
+  const orb = createLiquidGlassSphere(1.18);
   orbRoot.add(orb);
   addLights(orbScene, 1.15);
 
@@ -88,11 +88,12 @@ const start = () => {
 
   const orbHalo = new THREE.Mesh(
     new THREE.SphereGeometry(1.28, 48, 32),
-    new THREE.MeshBasicMaterial({ color: 0x002fa7, transparent: true, opacity: .07, side: THREE.BackSide })
+    new THREE.MeshBasicMaterial({ color: 0xeaf2ff, transparent: true, opacity: .12, side: THREE.BackSide, depthWrite: false })
   );
   orbRoot.add(orbHalo);
 
   const galleryScene = new THREE.Scene();
+  galleryScene.background = new THREE.Color(0xffffff);
   const galleryCamera = new THREE.PerspectiveCamera(104, 1, .1, 40);
   galleryCamera.position.set(0, 0, 0);
   const photoRoot = new THREE.Group();
@@ -101,20 +102,25 @@ const start = () => {
 
   const innerShell = new THREE.Mesh(
     new THREE.SphereGeometry(10.4, 48, 28),
-    new THREE.MeshBasicMaterial({ color: 0xdce5ff, transparent: true, opacity: .025, side: THREE.BackSide, depthWrite: false })
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .18, side: THREE.BackSide, depthWrite: false })
   );
   galleryScene.add(innerShell);
 
   const coreRoot = new THREE.Group();
   coreRoot.position.set(0, 0, -3.7);
   galleryScene.add(coreRoot);
-  const core = createKleinSphere(.86, noiseTexture, {
-    color: 0x91a9ee,
-    sheenColor: 0xdbe5ff,
-    specularColor: 0xf2f6ff,
-    bumpScale: .018
+  const core = createLiquidGlassSphere(.86, {
+    glassColor: 0x7fa5f2,
+    edgeColor: 0x174bc3,
+    innerColor: 0x4778df,
+    blobColor: 0x4f7fe4,
+    density: .9,
+    innerOpacity: .2,
+    blobOpacity: .12
   });
   coreRoot.add(core);
+  const coreHitTarget = core.userData.hitTarget;
+  const coreGlassUniforms = core.userData.glassUniforms;
   const coreBeltRig = new THREE.Group();
   coreBeltRig.rotation.set(-.04, 0, THREE.MathUtils.degToRad(-25));
   coreRoot.add(coreBeltRig);
@@ -128,7 +134,7 @@ const start = () => {
   coreBeltRig.add(coreBeltLine);
   const coreHalo = new THREE.Mesh(
     new THREE.SphereGeometry(.96, 48, 32),
-    new THREE.MeshBasicMaterial({ color: 0x9bb2f2, transparent: true, opacity: .09, side: THREE.BackSide, depthWrite: false })
+    new THREE.MeshBasicMaterial({ color: 0x174cc5, transparent: true, opacity: .12, side: THREE.BackSide, depthWrite: false })
   );
   coreRoot.add(coreHalo);
 
@@ -270,6 +276,24 @@ const start = () => {
     orbCursor.style.transform = `translate3d(${state.cursorX}px, ${state.cursorY}px, 0) translate(-50%, -50%)`;
 
     if (state.orbVisible && !state.open) {
+      const glassUniforms = orb.userData.glassUniforms;
+      glassUniforms.uTime.value = time * .001;
+      glassUniforms.uHover.value = THREE.MathUtils.lerp(
+        glassUniforms.uHover.value,
+        state.orbHovered ? 1 : 0,
+        .08
+      );
+      if (!reduceMotion) {
+        orb.userData.liquidBlobs.forEach((blob, index) => {
+          const offset = index * 2.13;
+          blob.position.set(
+            Math.sin(time * .00055 + offset) * (.27 + index * .035),
+            Math.cos(time * .00043 + offset * 1.3) * (.23 + index * .025),
+            Math.sin(time * .00037 + offset * .8) * .2
+          );
+          blob.scale.setScalar(1 + Math.sin(time * .00072 + offset) * .12);
+        });
+      }
       if (!reduceMotion) {
         const phase = time / 5200;
         const breath = 1 + Math.sin(phase * Math.PI * 2) * .055;
@@ -313,6 +337,23 @@ const start = () => {
         core.rotation.x = Math.sin(time * .0004) * .08;
         coreWordBelt.rotation.y -= delta * .44;
       }
+      coreGlassUniforms.uTime.value = time * .001;
+      coreGlassUniforms.uHover.value = THREE.MathUtils.lerp(
+        coreGlassUniforms.uHover.value,
+        state.coreHovered ? 1 : 0,
+        .09
+      );
+      if (!reduceMotion) {
+        core.userData.liquidBlobs.forEach((blob, index) => {
+          const offset = index * 2.37 + .6;
+          blob.position.set(
+            Math.sin(time * .00072 + offset) * (.19 + index * .018),
+            Math.cos(time * .00058 + offset * 1.2) * (.17 + index * .016),
+            Math.sin(time * .00047 + offset * .75) * .14
+          );
+          blob.scale.setScalar(1 + Math.sin(time * .0009 + offset) * .14);
+        });
+      }
       if (!reduceMotion) {
         const coreBreath = 1 + Math.sin(time / 820) * .045;
         const coreScale = THREE.MathUtils.lerp(coreBeltRig.scale.x, coreBreath, .075);
@@ -347,22 +388,146 @@ const start = () => {
     return renderer;
   }
 
+  function createLiquidGlassSphere(radius, options = {}) {
+    const uniforms = {
+      uTime: { value: 0 },
+      uHover: { value: 0 },
+      uReveal: { value: 1 },
+      uDensity: { value: options.density ?? .12 },
+      uGlassColor: { value: new THREE.Color(options.glassColor ?? 0x94b7ff) },
+      uEdgeColor: { value: new THREE.Color(options.edgeColor ?? 0x527de0) }
+    };
+    const material = new THREE.ShaderMaterial({
+      uniforms,
+      vertexShader: `
+        uniform float uTime;
+        uniform float uHover;
+        uniform float uReveal;
+        uniform float uDensity;
+        uniform vec3 uGlassColor;
+        uniform vec3 uEdgeColor;
+        varying vec3 vNormalWorld;
+        varying vec3 vWorldPosition;
+        varying vec3 vObjectPosition;
+        void main() {
+          float waveA = sin(position.y * 5.2 + uTime * 1.15);
+          float waveB = sin(position.x * 4.1 - uTime * .82 + position.z * 2.4);
+          float displacement = (waveA + waveB) * (.007 + uHover * .004);
+          vec3 moved = position + normal * displacement;
+          vObjectPosition = moved;
+          vNormalWorld = normalize(mat3(modelMatrix) * normal);
+          vec4 world = modelMatrix * vec4(moved, 1.0);
+          vWorldPosition = world.xyz;
+          gl_Position = projectionMatrix * viewMatrix * world;
+        }
+      `,
+      fragmentShader: `
+        uniform float uTime;
+        uniform float uHover;
+        uniform float uReveal;
+        uniform float uDensity;
+        uniform vec3 uGlassColor;
+        uniform vec3 uEdgeColor;
+        varying vec3 vNormalWorld;
+        varying vec3 vWorldPosition;
+        varying vec3 vObjectPosition;
+        void main() {
+          vec3 normal = normalize(vNormalWorld);
+          vec3 viewDirection = normalize(cameraPosition - vWorldPosition);
+          float facing = clamp(dot(normal, viewDirection), 0.0, 1.0);
+          float fresnel = pow(1.0 - facing, 2.35);
+          float flowA = sin(vObjectPosition.y * 6.2 + vObjectPosition.x * 2.7 + uTime * 1.05);
+          float flowB = sin(vObjectPosition.z * 7.0 - vObjectPosition.y * 2.3 - uTime * .78);
+          float flow = .5 + .25 * flowA + .25 * flowB;
+          float caustic = smoothstep(.52, .92, flow) * (1.0 - fresnel);
+          vec3 lightDirection = normalize(vec3(-.55, .72, 1.0));
+          vec3 halfDirection = normalize(lightDirection + viewDirection);
+          float specular = pow(max(dot(normal, halfDirection), 0.0), 72.0);
+          float secondary = pow(max(dot(normal, normalize(vec3(.72, -.35, .62))), 0.0), 24.0);
+          vec3 coolGlass = uGlassColor;
+          vec3 clearGlass = vec3(.94, .975, 1.0);
+          vec3 edgeBlue = uEdgeColor;
+          vec3 color = mix(clearGlass, coolGlass, .16 + uDensity * .24 + flow * .16);
+          color = mix(color, edgeBlue, fresnel * (.4 + uDensity * .25));
+          color += caustic * vec3(.22, .3, .5);
+          color += specular * vec3(1.0) + secondary * vec3(.2, .3, .52);
+          float alpha = .065 + uDensity * .11 + fresnel * (.46 + uDensity * .12) + caustic * .11 + specular * .52 + secondary * .08;
+          alpha += uHover * (.025 + fresnel * .06);
+          gl_FragColor = vec4(color, clamp(alpha, .06, .9) * uReveal);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      side: THREE.FrontSide,
+      toneMapped: false
+    });
+
+    const root = new THREE.Group();
+    const glass = new THREE.Mesh(new THREE.SphereGeometry(radius, 96, 64), material);
+    glass.renderOrder = 3;
+    root.add(glass);
+
+    const innerShell = new THREE.Mesh(
+      new THREE.SphereGeometry(radius * .965, 72, 48),
+      new THREE.MeshBasicMaterial({
+        color: options.innerColor ?? 0xbdd2ff,
+        transparent: true,
+        opacity: options.innerOpacity ?? .095,
+        side: THREE.BackSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false
+      })
+    );
+    innerShell.renderOrder = 1;
+    root.add(innerShell);
+
+    const liquidBlobs = [0, 1, 2].map((index) => {
+      const blob = new THREE.Mesh(
+        new THREE.SphereGeometry(radius * (.24 + index * .035), 32, 24),
+        new THREE.MeshBasicMaterial({
+          color: index === 1 ? 0xffffff : (options.blobColor ?? 0x8fb3ff),
+          transparent: true,
+          opacity: index === 1 ? (options.blobOpacity ?? .075) * .72 : (options.blobOpacity ?? .075),
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          toneMapped: false
+        })
+      );
+      blob.renderOrder = 2;
+      root.add(blob);
+      return blob;
+    });
+    root.userData.glassUniforms = uniforms;
+    root.userData.liquidBlobs = liquidBlobs;
+    root.userData.hitTarget = glass;
+    root.userData.glassMaterial = material;
+    return root;
+  }
+
   function createKleinSphere(radius, bumpTexture, options = {}) {
     const material = new THREE.MeshPhysicalMaterial({
       color: options.color ?? 0x002fa7,
-      roughness: .22,
-      metalness: .045,
-      clearcoat: .88,
-      clearcoatRoughness: .15,
-      sheen: .42,
+      roughness: options.roughness ?? .08,
+      metalness: 0,
+      transmission: options.transmission ?? .78,
+      thickness: options.thickness ?? 1.2,
+      ior: options.ior ?? 1.42,
+      attenuationColor: new THREE.Color(options.attenuationColor ?? options.color ?? 0x002fa7),
+      attenuationDistance: options.attenuationDistance ?? 1.65,
+      clearcoat: 1,
+      clearcoatRoughness: .045,
+      sheen: .28,
       sheenColor: new THREE.Color(options.sheenColor ?? 0x547ce5),
-      sheenRoughness: .38,
-      specularIntensity: 1.08,
+      sheenRoughness: .24,
+      specularIntensity: 1.3,
       specularColor: new THREE.Color(options.specularColor ?? 0xb8caff),
       bumpMap: bumpTexture,
       bumpScale: options.bumpScale ?? .022,
       transparent: true,
-      opacity: 1
+      opacity: options.opacity ?? .94,
+      side: THREE.DoubleSide,
+      depthWrite: false
     });
     return new THREE.Mesh(new THREE.SphereGeometry(radius, 64, 48), material);
   }
@@ -446,9 +611,9 @@ const start = () => {
         uniform float uOpacity;
         varying float vLight;
         void main() {
-          vec3 base = vec3(0.0, .184, .655);
-          vec3 highlight = vec3(.34, .51, .91);
-          gl_FragColor = vec4(mix(base, highlight, vLight * .45) * vLight, uOpacity);
+          vec3 base = vec3(.88, .91, .97);
+          vec3 highlight = vec3(1.0);
+          gl_FragColor = vec4(mix(base, highlight, vLight * .72), uOpacity);
         }
       `,
       transparent: true,
@@ -682,12 +847,12 @@ const start = () => {
       slot.arm.add(panel);
     });
 
-    // A quiet inner shell closes the gaps without reconnecting the cards into
-    // horizontal bands. It sits behind every tangent plane.
+    // A white inner shell closes every gap so the immersive room remains
+    // genuinely white in WebGL, independent of the page background beneath it.
     const outerSphere = new THREE.Mesh(
       new THREE.SphereGeometry(radius + .7, 96, 64),
       new THREE.MeshBasicMaterial({
-        color: 0x1748bd,
+        color: 0xffffff,
         transparent: false,
         opacity: 1,
         side: THREE.BackSide,
@@ -827,7 +992,7 @@ const start = () => {
       gsap.set(photoMaterials, { opacity: 0 });
       gsap.set(galleryUi, { autoAlpha: 0 });
       gsap.set(coreRoot.scale, { x: .28, y: .28, z: .28 });
-      gsap.set(core.material, { opacity: 0, roughness: .72 });
+      gsap.set(coreGlassUniforms.uReveal, { value: 0 });
       gsap.set(coreWordBelt.material, { opacity: 0 });
       gsap.set(coreBeltLine.material, { opacity: 0 });
       gsap.set(coreHalo.material, { opacity: 0 });
@@ -849,7 +1014,7 @@ const start = () => {
         .to(photoMaterials, { opacity: (index) => photoMaterialOpacities[index], duration: 1.15, ease: 'sine.inOut' }, .58)
         .to(galleryUi, { autoAlpha: 1, duration: .7, ease: 'sine.out' }, 1.15)
         .to(coreRoot.scale, { x: 1, y: 1, z: 1, duration: 1.15, ease: 'power2.out' }, .85)
-        .to(core.material, { opacity: 1, roughness: .22, duration: .95, ease: 'sine.out' }, .9)
+        .to(coreGlassUniforms.uReveal, { value: 1, duration: .95, ease: 'sine.out' }, .9)
         .to(coreWordBelt.material, { opacity: .96, duration: .75, ease: 'sine.out' }, 1.1)
         .to(coreBeltLine.material, { opacity: .2, duration: .68, ease: 'sine.out' }, 1.12)
         .to(coreHalo.material, { opacity: .09, duration: .68, ease: 'sine.out' }, 1.12)
@@ -861,7 +1026,7 @@ const start = () => {
       galleryUi.style.opacity = '1';
       galleryUi.style.visibility = 'visible';
       coreRoot.scale.setScalar(1);
-      core.material.opacity = 1;
+      coreGlassUniforms.uReveal.value = 1;
       coreWordBelt.material.opacity = .96;
       coreBeltLine.material.opacity = .2;
       coreHalo.material.opacity = .09;
@@ -925,8 +1090,8 @@ const start = () => {
   function updateHover() {
     if (!state.open || state.lightboxOpen || state.dragging || state.transitioning) return;
     raycaster.setFromCamera(pointer, galleryCamera);
-    const hit = raycaster.intersectObjects([core, ...cardMeshes], false)[0]?.object || null;
-    state.coreHovered = hit === core;
+    const hit = raycaster.intersectObjects([coreHitTarget, ...cardMeshes], false)[0]?.object || null;
+    state.coreHovered = hit === coreHitTarget;
     state.hovered = state.coreHovered ? null : hit;
     viewport.dataset.coreHovered = String(state.coreHovered);
     viewport.style.cursor = hit ? 'pointer' : 'grab';
@@ -937,8 +1102,8 @@ const start = () => {
 
   function selectAtPointer() {
     raycaster.setFromCamera(pointer, galleryCamera);
-    const hit = raycaster.intersectObjects([core, ...cardMeshes], false)[0]?.object;
-    if (hit === core) closeGallery();
+    const hit = raycaster.intersectObjects([coreHitTarget, ...cardMeshes], false)[0]?.object;
+    if (hit === coreHitTarget) closeGallery();
     else if (hit) openLightbox(hit.userData.item, hit);
   }
 
