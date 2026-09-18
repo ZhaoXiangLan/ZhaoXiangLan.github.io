@@ -12,7 +12,20 @@ const start = () => {
   const orbCursor = document.querySelector('[data-orb-cursor]');
   const lightbox = document.querySelector('[data-gallery-lightbox]');
   const lightboxClose = document.querySelector('[data-gallery-lightbox-close]');
-  const items = Array.isArray(window.ZL_GALLERY_ITEMS) ? window.ZL_GALLERY_ITEMS : [];
+  const sourceItems = Array.isArray(window.ZL_GALLERY_ITEMS) ? window.ZL_GALLERY_ITEMS : [];
+  const seenPhotoIds = new Set();
+  const items = sourceItems.filter((item) => {
+    // Nikon's paired DSC_#### / DSC_E#### exports can contain the same frame.
+    // Prefer the first version so one photograph is never placed twice.
+    const photoId = String(item.file || item.preview || '')
+      .split('/').pop()
+      .replace(/^DSC_E(?=\d)/i, 'DSC_')
+      .replace(/\.[^.]+$/, '')
+      .toUpperCase();
+    if (!photoId || seenPhotoIds.has(photoId)) return false;
+    seenPhotoIds.add(photoId);
+    return true;
+  });
 
   if (!orbButton || !orbCanvas || !overlay || !viewport || !galleryCanvas || !closeButton || !galleryUi || !colorWash || !orbCursor || !lightbox || !lightboxClose || !items.length) return;
 
@@ -97,7 +110,6 @@ const start = () => {
   const galleryCamera = new THREE.PerspectiveCamera(104, 1, .1, 40);
   galleryCamera.position.set(0, 0, 0);
   const photoRoot = new THREE.Group();
-  photoRoot.rotation.order = 'YXZ';
   galleryScene.add(photoRoot);
 
   const innerShell = new THREE.Mesh(
@@ -163,6 +175,10 @@ const start = () => {
   const pointer = new THREE.Vector2(2, 2);
   const cameraDirection = new THREE.Vector3();
   const worldPosition = new THREE.Vector3();
+  const screenPitchAxis = new THREE.Vector3(1, 0, 0);
+  const worldYawAxis = new THREE.Vector3(0, 1, 0);
+  const pitchQuaternion = new THREE.Quaternion();
+  const yawQuaternion = new THREE.Quaternion();
 
   resizeOrb();
   resizeGallery();
@@ -213,6 +229,9 @@ const start = () => {
 
   viewport.addEventListener('pointermove', (event) => {
     updatePointer(event);
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      state.targetPitch = clamp(pointer.y * -.03, -.03, .03);
+    }
     if (!state.dragging || event.pointerId !== state.pointerId) {
       updateHover();
       return;
@@ -221,7 +240,6 @@ const start = () => {
     const dy = event.clientY - state.lastY;
     if (Math.abs(dx) + Math.abs(dy) > 3) state.moved = true;
     state.targetYaw += dx * .0044;
-    state.targetPitch = 0;
     state.velocityX = dx * .00065;
     state.velocityY = 0;
     state.lastX = event.clientX;
@@ -237,6 +255,7 @@ const start = () => {
   viewport.addEventListener('pointercancel', finishDrag);
   viewport.addEventListener('pointerleave', () => {
     if (state.dragging) return;
+    state.targetPitch = 0;
     state.coreHovered = false;
     state.hovered = null;
     viewport.dataset.coreHovered = 'false';
@@ -314,12 +333,11 @@ const start = () => {
     if (state.open) {
       if (!state.dragging && !state.lightboxOpen && !reduceMotion) {
         state.targetYaw += state.velocityX;
-        state.targetPitch = 0;
         state.velocityX *= .94;
         state.velocityY *= .92;
       }
       state.yaw = THREE.MathUtils.lerp(state.yaw, state.targetYaw, reduceMotion ? 1 : .085);
-      state.pitch = THREE.MathUtils.lerp(state.pitch, 0, reduceMotion ? 1 : .085);
+      state.pitch = THREE.MathUtils.lerp(state.pitch, state.targetPitch, reduceMotion ? 1 : .065);
       // Keep horizontal rotation numerically stable without introducing a
       // visible boundary: yaw can continue in either direction forever.
       if (Math.abs(state.yaw) > Math.PI * 64) {
@@ -330,8 +348,13 @@ const start = () => {
       }
       viewport.dataset.yaw = state.yaw.toFixed(4);
       viewport.dataset.pitch = state.pitch.toFixed(4);
-      photoRoot.rotation.y = state.yaw;
-      photoRoot.rotation.x = state.pitch;
+      // Compose screen-relative pitch after world-relative yaw. Keeping the
+      // axes separate makes the globe bow inward vertically even after it has
+      // been dragged around, without leaking the hover motion into sideways sway.
+      pitchQuaternion.setFromAxisAngle(screenPitchAxis, state.pitch);
+      yawQuaternion.setFromAxisAngle(worldYawAxis, state.yaw);
+      photoRoot.quaternion.copy(pitchQuaternion).multiply(yawQuaternion);
+      photoRoot.position.y = 0;
       if (!reduceMotion && !state.coreHovered) {
         core.rotation.y += delta * .22;
         core.rotation.x = Math.sin(time * .0004) * .08;
@@ -752,11 +775,11 @@ const start = () => {
       else arm.rotation.y = THREE.MathUtils.degToRad(spec.angle);
       globeRig.add(arm);
 
-      // Twelve candidate positions per arm give the spacing pass enough room
-      // to distribute the photographs without reconnecting them into bands.
-      for (let slotIndex = 0; slotIndex < 12; slotIndex += 1) {
+      // A dense candidate grid lets the collision pass move inaccessible
+      // polar frames into safe positions without forcing visible rows.
+      for (let slotIndex = 0; slotIndex < 18; slotIndex += 1) {
         const jitter = (seededUnit(armIndex * 97 + slotIndex * 41 + 13) - .5) * 3;
-        const orbitAngle = THREE.MathUtils.degToRad(spec.phase + slotIndex * 30 + jitter);
+        const orbitAngle = THREE.MathUtils.degToRad(spec.phase + slotIndex * 20 + jitter);
         const localPosition = spec.axis === 'x'
           ? new THREE.Vector3(Math.sin(orbitAngle) * radius, 0, -Math.cos(orbitAngle) * radius)
           : new THREE.Vector3(0, Math.sin(orbitAngle) * radius, -Math.cos(orbitAngle) * radius);
@@ -766,54 +789,108 @@ const start = () => {
       return arm;
     });
 
-    // Remove near-duplicate intersections where crossing arms meet. The
-    // remaining slots stay irregular and read as one globe rather than rows.
-    // The reference leaves a clear pocket of air around every frame. A
-    // generous angular gap also accounts for wide landscape photographs, so
-    // intersecting arms never create visible card-on-card collisions.
-    const minSeparation = THREE.MathUtils.degToRad(7.5);
+    // Remove duplicate arm intersections and reject the inaccessible polar
+    // caps. The retained band still wraps through the full 360 degrees.
+    const minSeparation = THREE.MathUtils.degToRad(3.5);
+    const safeLatitude = Math.sin(THREE.MathUtils.degToRad(52));
     const slots = [];
     candidates.forEach((candidate) => {
       const direction = candidate.worldPosition.clone().normalize();
+      if (Math.abs(direction.y) > safeLatitude) return;
       const overlaps = slots.some((slot) => (
         Math.acos(clamp(direction.dot(slot.direction), -1, 1)) < minSeparation
       ));
-      if (!overlaps) slots.push({ ...candidate, direction });
+      if (!overlaps) {
+        slots.push({
+          ...candidate,
+          direction,
+          latitude: Math.abs(Math.asin(clamp(direction.y, -1, 1)))
+        });
+      }
     });
 
-    // Farthest-point placement creates the airy, evenly scattered inner-globe
-    // layout from the reference while keeping every photograph independent.
+    // Place each actual card using its diagonal angular footprint. A slot is
+    // accepted only when the complete photograph, not merely its centre,
+    // clears every card already placed.
     const forward = new THREE.Vector3(0, 0, -1);
     const availableSlots = [...slots];
     const photoSlots = [];
-    while (photoSlots.length < layoutItems.length && availableSlots.length) {
-      let bestIndex = 0;
-      let bestScore = -Infinity;
-      availableSlots.forEach((slot, index) => {
-        const nearest = photoSlots.length
-          ? Math.min(...photoSlots.map((placed) => (
-            Math.acos(clamp(slot.direction.dot(placed.direction), -1, 1))
-          )))
-          : Math.PI;
-        const forwardBias = slot.direction.dot(forward) * (photoSlots.length ? .035 : .22);
-        const score = nearest + forwardBias;
-        if (score > bestScore) {
-          bestScore = score;
-          bestIndex = index;
-        }
-      });
-      photoSlots.push(availableSlots.splice(bestIndex, 1)[0]);
-    }
-    photoSlots.forEach((slot, index) => {
-      const item = layoutItems[index];
+    const centralTarget = Math.min(8, Math.ceil(layoutItems.length * .24));
+    const collisionGap = THREE.MathUtils.degToRad(1.8);
+    const minimumHalfView = THREE.MathUtils.degToRad(49);
+    const maximumFollowAngle = .03;
+    layoutItems.forEach((item, itemOrder) => {
+      if (!availableSlots.length) return;
+      const aspect = clamp(Number(item.aspect) || 4 / 3, .54, 1.72);
+      const baseHeight = 1.72 + seededUnit(itemOrder * 67 + 19) * .42;
+      let bestSafeIndex = -1;
+      let bestSafeScore = -Infinity;
+      let fallbackIndex = 0;
+      let fallbackClearance = -Infinity;
+      let chosenScale = 1;
+
+      // Try the intended size first. If a dense group cannot clear its
+      // neighbours, reduce only that one card in small steps instead of
+      // allowing two photographs to intersect.
+      const scales = [1, .94, .88, .82, .76];
+      for (const scale of scales) {
+        const height = baseHeight * scale;
+        const width = height * aspect;
+        const footprint = Math.atan(Math.hypot(width, height) * .5 / radius);
+        const verticalHalfAngle = Math.atan((height * .5) / radius);
+        // At the strongest cursor-follow pitch, an edge card may crop, but
+        // never beyond two thirds: at least one third remains visible/clickable.
+        const maxCentreLatitude = minimumHalfView - maximumFollowAngle + verticalHalfAngle / 3;
+
+        bestSafeIndex = -1;
+        bestSafeScore = -Infinity;
+        fallbackIndex = 0;
+        fallbackClearance = -Infinity;
+
+        availableSlots.forEach((slot, index) => {
+          if (slot.latitude > maxCentreLatitude) return;
+          const clearance = photoSlots.length
+            ? Math.min(...photoSlots.map((placed) => {
+              const centreDistance = Math.acos(clamp(slot.direction.dot(placed.direction), -1, 1));
+              return centreDistance - footprint - placed.footprint - collisionGap;
+            }))
+            : Math.PI;
+          if (clearance > fallbackClearance) {
+            fallbackClearance = clearance;
+            fallbackIndex = index;
+          }
+          if (clearance < 0) return;
+          const frontness = slot.direction.dot(forward);
+          const latitudePenalty = Math.abs(slot.direction.y);
+          const score = itemOrder < centralTarget
+            ? frontness * 1.55 - latitudePenalty * .28 + Math.min(clearance, .28) * .2
+            : Math.min(clearance, .7) + frontness * .045 - latitudePenalty * .035;
+          if (score > bestSafeScore) {
+            bestSafeScore = score;
+            bestSafeIndex = index;
+          }
+        });
+
+        chosenScale = scale;
+        if (bestSafeIndex >= 0) break;
+      }
+
+      const chosenIndex = bestSafeIndex >= 0 ? bestSafeIndex : fallbackIndex;
+      const slot = availableSlots.splice(chosenIndex, 1)[0];
+      const height = baseHeight * chosenScale;
+      const width = height * aspect;
+      const footprint = Math.atan(Math.hypot(width, height) * .5 / radius);
       slot.item = item;
       slot.itemIndex = galleryItems.indexOf(slot.item);
+      slot.aspect = aspect;
+      slot.height = height;
+      slot.width = width;
+      slot.footprint = footprint;
+      photoSlots.push(slot);
     });
 
     photoSlots.forEach((slot, slotIndex) => {
-      const aspect = clamp(Number(slot.item.aspect) || 4 / 3, .54, 1.72);
-      const height = 2.04 + seededUnit(slotIndex * 67 + 19) * .56;
-      const width = height * aspect;
+      const { aspect, height, width } = slot;
       const geometry = new THREE.PlaneGeometry(width, height, 1, 1);
       const texture = createCardTexture(slot.item, slot.itemIndex, maxAnisotropy, aspect);
       const material = new THREE.MeshBasicMaterial({
@@ -973,6 +1050,8 @@ const start = () => {
     if (state.open && !state.transitioning) return;
     state.open = true;
     state.transitioning = true;
+    state.targetPitch = 0;
+    state.pitch = 0;
     orbButton.setAttribute('aria-expanded', 'true');
     overlay.setAttribute('aria-hidden', 'false');
     overlay.classList.add('is-open');
@@ -1061,6 +1140,8 @@ const start = () => {
   function finalizeClose() {
     state.open = false;
     state.transitioning = false;
+    state.targetPitch = 0;
+    state.pitch = 0;
     fracture.root.visible = false;
     overlay.classList.remove('is-open');
     overlay.setAttribute('aria-hidden', 'true');
