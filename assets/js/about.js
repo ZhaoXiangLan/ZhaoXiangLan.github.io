@@ -4,8 +4,23 @@
 
   if (hasGsap) window.gsap.registerPlugin(window.ScrollTrigger);
 
+  initAutoScrollbar();
   initStickerWall();
   initGalleryTransition();
+
+  function initAutoScrollbar() {
+    const root = document.documentElement;
+    let hideTimer = 0;
+    root.classList.add('about-scrollbar-ready');
+    const reveal = () => {
+      root.classList.add('about-is-scrolling');
+      window.clearTimeout(hideTimer);
+      hideTimer = window.setTimeout(() => root.classList.remove('about-is-scrolling'), 650);
+    };
+    window.addEventListener('scroll', reveal, { passive: true });
+    window.addEventListener('wheel', reveal, { passive: true });
+    window.addEventListener('touchmove', reveal, { passive: true });
+  }
 
   function initStickerWall() {
     const track = document.querySelector('[data-about-track]');
@@ -172,14 +187,6 @@
       .to(portal, { autoAlpha: 1, scale: 1, duration: .5, ease: 'power3.out' }, .3)
       .fromTo('.gallery-scroll-label', { autoAlpha: 0, y: 10 }, { autoAlpha: .65, y: 0, duration: .13 }, .8);
 
-    window.ScrollTrigger.create({
-      trigger: track,
-      start: 'top top',
-      end: 'bottom bottom',
-      pin: stage,
-      anticipatePin: 1,
-      invalidateOnRefresh: true
-    });
   }
 
   window.addEventListener('load', () => {

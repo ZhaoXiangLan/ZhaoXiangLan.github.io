@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Manrope:wght@600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css?v=20260916-8">
-    <link rel="stylesheet" href="../assets/css/about.css?v=20260917-7">
+    <link rel="stylesheet" href="../assets/css/about.css?v=20260918-15">
     <title>About — ZhaoXiang Lan</title>
   </head>
   <body class="page-about">
@@ -106,6 +106,7 @@
 
     <section class="gallery-immersive" id="gallery-immersive" data-gallery-overlay aria-hidden="true" aria-label="Immersive spherical photo gallery">
       <div class="gallery-sky" aria-hidden="true"></div>
+      <span class="gallery-color-wash" data-gallery-color-wash aria-hidden="true"></span>
       <div class="gallery-viewport" data-gallery-viewport tabindex="0" role="application" aria-label="Drag to look around the spherical photo gallery. Click the center sphere to exit.">
         <canvas class="gallery-webgl-canvas" data-gallery-canvas aria-hidden="true"></canvas>
       </div>
@@ -131,11 +132,13 @@
       </div>
     </section>
 
+    <span class="gallery-orb-cursor" data-orb-cursor aria-hidden="true"></span>
+
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js" defer></script>
     <script src="../assets/js/main.js?v=20260915-5" defer></script>
-    <script src="../assets/js/gallery-data.js?v=20260917-1" defer></script>
-    <script src="../assets/js/about.js?v=20260917-7" defer></script>
-    <script type="module" src="../assets/js/about-webgl.js?v=20260917-11"></script>
+    <script src="../assets/js/gallery-data.js?v=20260918-1" defer></script>
+    <script src="../assets/js/about.js?v=20260917-8" defer></script>
+    <script type="module" src="../assets/js/about-webgl.js?v=20260918-23"></script>
   </body>
 </html>
