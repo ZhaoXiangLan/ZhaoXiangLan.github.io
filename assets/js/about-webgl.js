@@ -175,6 +175,7 @@ const start = () => {
   const pointer = new THREE.Vector2(2, 2);
   const cameraDirection = new THREE.Vector3();
   const worldPosition = new THREE.Vector3();
+  const displayPreloads = new Map();
   const screenPitchAxis = new THREE.Vector3(1, 0, 0);
   const worldYawAxis = new THREE.Vector3(0, 1, 0);
   const pitchQuaternion = new THREE.Quaternion();
@@ -1174,6 +1175,7 @@ const start = () => {
     const hit = raycaster.intersectObjects([coreHitTarget, ...cardMeshes], false)[0]?.object || null;
     state.coreHovered = hit === coreHitTarget;
     state.hovered = state.coreHovered ? null : hit;
+    if (state.hovered?.userData.item) preloadDisplayImage(state.hovered.userData.item);
     viewport.dataset.coreHovered = String(state.coreHovered);
     viewport.style.cursor = hit ? 'pointer' : 'grab';
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -1214,14 +1216,23 @@ const start = () => {
     placeholder.style.background = `radial-gradient(circle at 65% 30%, ${item.accent || '#cdeb55'}, transparent 17%), linear-gradient(135deg, #002fa7, #5d7cdf 72%, #8fa4ec)`;
 
     if (item.file) {
-      image.hidden = false;
-      placeholder.hidden = true;
-      image.src = `../assets/images/gallery/${item.file}`;
+      const displaySource = getDisplaySource(item);
+      image.hidden = true;
+      image.classList.remove('is-ready');
+      image.removeAttribute('src');
+      placeholder.hidden = false;
       image.alt = [item.date, item.location].filter(Boolean).join(', ') || 'Gallery photograph';
+      image.onload = () => {
+        image.hidden = false;
+        requestAnimationFrame(() => image.classList.add('is-ready'));
+        placeholder.hidden = true;
+      };
       image.onerror = () => {
         image.hidden = true;
+        image.classList.remove('is-ready');
         placeholder.hidden = false;
       };
+      image.src = displaySource;
     } else {
       image.hidden = true;
       image.removeAttribute('src');
@@ -1242,6 +1253,22 @@ const start = () => {
     document.body.classList.remove('gallery-photo-open');
     viewport.focus({ preventScroll: true });
     state.selected = null;
+  }
+
+  function getDisplaySource(item) {
+    if (item.display) return `../assets/images/gallery/${item.display}`;
+    const filename = String(item.file || '').split('/').pop();
+    const basename = filename.replace(/\.[^.]+$/, '');
+    return `../assets/images/gallery/display/${basename}.webp`;
+  }
+
+  function preloadDisplayImage(item) {
+    const source = getDisplaySource(item);
+    if (!source || displayPreloads.has(source)) return;
+    const preload = new Image();
+    preload.decoding = 'async';
+    preload.src = source;
+    displayPreloads.set(source, preload);
   }
 };
 

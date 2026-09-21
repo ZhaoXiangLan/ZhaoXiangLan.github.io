@@ -836,6 +836,11 @@
   object-fit: contain;
   object-position: center;
 }
+.gallery-lightbox-image-wrap img {
+  opacity: 0;
+  transition: opacity .32s ease;
+}
+.gallery-lightbox-image-wrap img.is-ready { opacity: 1; }
 .gallery-lightbox-image-wrap > span {
   background:
     radial-gradient(circle at 65% 30%, var(--about-lime), transparent 17%),
