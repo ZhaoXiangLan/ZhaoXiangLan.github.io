@@ -17,7 +17,7 @@ const start = () => {
   const items = sourceItems.filter((item) => {
     // Nikon's paired DSC_#### / DSC_E#### exports can contain the same frame.
     // Prefer the first version so one photograph is never placed twice.
-    const photoId = String(item.file || item.preview || '')
+    const photoId = String(item.display || item.file || '')
       .split('/').pop()
       .replace(/^DSC_E(?=\d)/i, 'DSC_')
       .replace(/\.[^.]+$/, '')
@@ -965,7 +965,7 @@ const start = () => {
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = anisotropy;
 
-    if (item.preview || item.file) {
+    if (item.display || item.file) {
       const image = new Image();
       image.decoding = 'async';
       image.onload = () => {
@@ -976,7 +976,7 @@ const start = () => {
         paintCard(context, canvas, item, index, null);
         texture.needsUpdate = true;
       };
-      image.src = `../assets/images/gallery/${item.preview || item.file}`;
+      image.src = getDisplaySource(item);
     }
     return texture;
   }
@@ -1215,7 +1215,7 @@ const start = () => {
     lightbox.querySelector('[data-gallery-lightbox-description]').textContent = '';
     placeholder.style.background = `radial-gradient(circle at 65% 30%, ${item.accent || '#cdeb55'}, transparent 17%), linear-gradient(135deg, #002fa7, #5d7cdf 72%, #8fa4ec)`;
 
-    if (item.file) {
+    if (item.display || item.file) {
       const displaySource = getDisplaySource(item);
       image.hidden = true;
       image.classList.remove('is-ready');
